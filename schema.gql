@@ -1,0 +1,62 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateRewardInput {
+  coinCost: Int!
+  description: String
+  title: String!
+}
+
+input CreateTaskInput {
+  coinReward: Int!
+  description: String
+  title: String!
+}
+
+type Mutation {
+  """Mark a task as completed and earn its coin reward"""
+  completeTask(id: ID!): Task!
+
+  """Create a new reward"""
+  createReward(input: CreateRewardInput!): Reward!
+
+  """Create a new task"""
+  createTask(input: CreateTaskInput!): Task!
+
+  """Spend coins to redeem a reward"""
+  redeemReward(id: ID!): Reward!
+}
+
+type Query {
+  """Get the current coin balance"""
+  coinBalance: Int!
+
+  """Get a single reward by ID"""
+  reward(id: ID!): Reward!
+
+  """List all rewards"""
+  rewards: [Reward!]!
+
+  """Get a single task by ID"""
+  task(id: ID!): Task!
+
+  """List all tasks"""
+  tasks: [Task!]!
+}
+
+type Reward {
+  coinCost: Int!
+  description: String
+  id: ID!
+  isRedeemed: Boolean!
+  title: String!
+}
+
+type Task {
+  coinReward: Int!
+  description: String
+  id: ID!
+  isCompleted: Boolean!
+  title: String!
+}
