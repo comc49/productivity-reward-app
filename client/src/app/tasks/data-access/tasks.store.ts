@@ -1,6 +1,6 @@
 import { computed, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { Apollo } from 'apollo-angular';
 import {
   patchState,
   signalStore,
@@ -10,6 +10,11 @@ import {
 } from '@ngrx/signals';
 import { CreateTaskInput, Task } from '../models/task.model';
 import { WalletStore } from '../../wallet';
+import {
+  COMPLETE_TASK,
+  CREATE_TASK,
+  GET_TASKS,
+} from './tasks.graphql';
 
 type TasksState = {
   tasks: Task[];
@@ -23,15 +28,6 @@ const initialState: TasksState = {
   error: null,
 };
 
-const GQL = {
-  tasks: `{ tasks { id title description coinReward isCompleted } coinBalance }`,
-  completeTask: (id: string) =>
-    `mutation { completeTask(id: "${id}") { id isCompleted coinReward } }`,
-  createTask: `mutation CreateTask($input: CreateTaskInput!) {
-    createTask(input: $input) { id title description coinReward isCompleted }
-  }`,
-};
-
 export const TasksStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
@@ -40,52 +36,67 @@ export const TasksStore = signalStore(
     completedTasks: computed(() => tasks().filter((t) => t.isCompleted)),
   })),
   withMethods(
-    (store, http = inject(HttpClient), walletStore = inject(WalletStore)) => ({
+    (store, apollo = inject(Apollo), walletStore = inject(WalletStore)) => ({
       async loadTasks(): Promise<void> {
         patchState(store, { isLoading: true, error: null });
         try {
-          const res = await firstValueFrom(
-            http.post<{ data: { tasks: Task[]; coinBalance: number } }>(
-              '/graphql',
-              { query: GQL.tasks }
-            )
+          const result = await firstValueFrom(
+            apollo.query({
+              query: GET_TASKS,
+              fetchPolicy: 'network-only',
+            })
           );
-          patchState(store, { tasks: res.data.tasks, isLoading: false });
-          walletStore.setBalance(res.data.coinBalance);
+          const data = result.data;
+          if (!data) return;
+          patchState(store, { tasks: data.tasks, isLoading: false });
+          walletStore.setBalance(data.coinBalance);
         } catch {
           patchState(store, { isLoading: false, error: 'Failed to load tasks' });
         }
       },
 
       async completeTask(id: string): Promise<void> {
+        // Optimistically mark the task as completed in the UI immediately
+        patchState(store, (s) => ({
+          tasks: s.tasks.map((t) =>
+            t.id === id ? { ...t, isCompleted: true } : t
+          ),
+        }));
+
         try {
-          const res = await firstValueFrom(
-            http.post<{ data: { completeTask: Task } }>('/graphql', {
-              query: GQL.completeTask(id),
+          const result = await firstValueFrom(
+            apollo.mutate({
+              mutation: COMPLETE_TASK,
+              variables: { id },
             })
           );
-          const done = res.data.completeTask;
+
+          if (!result.data) return;
+
+          // Sync the confirmed coin reward from the server response
+          walletStore.addCoins(result.data.completeTask.coinReward);
+        } catch {
+          // Roll back the optimistic update on failure
           patchState(store, (s) => ({
             tasks: s.tasks.map((t) =>
-              t.id === id ? { ...t, isCompleted: true } : t
+              t.id === id ? { ...t, isCompleted: false } : t
             ),
+            error: 'Failed to complete task',
           }));
-          walletStore.addCoins(done.coinReward);
-        } catch {
-          patchState(store, { error: 'Failed to complete task' });
         }
       },
 
       async createTask(input: CreateTaskInput): Promise<void> {
         try {
-          const res = await firstValueFrom(
-            http.post<{ data: { createTask: Task } }>('/graphql', {
-              query: GQL.createTask,
+          const result = await firstValueFrom(
+            apollo.mutate({
+              mutation: CREATE_TASK,
               variables: { input },
             })
           );
+          if (!result.data) return;
           patchState(store, (s) => ({
-            tasks: [...s.tasks, res.data.createTask],
+            tasks: [...s.tasks, result.data!.createTask],
           }));
         } catch {
           patchState(store, { error: 'Failed to create task' });
