@@ -1,1 +1,39 @@
-{}
+{
+  "app": {
+    "name": "Productivity Rewards",
+    "tagline": "Complete tasks, earn coins, unlock rewards"
+  },
+  "common": {
+    "error": "Something went wrong"
+  },
+  "wallet": {
+    "balance": "Coin balance",
+    "coins": "{{ count }} coins"
+  },
+  "tasks": {
+    "add": {
+      "heading": "Add a New Task",
+      "title_label": "Task Title",
+      "title_placeholder": "e.g. Read for 30 minutes",
+      "description_label": "Description",
+      "description_placeholder": "What does this task involve?",
+      "optional": "optional",
+      "coin_reward_label": "Coin Reward",
+      "submit": "Add Task",
+      "errors": {
+        "title_required": "Title is required",
+        "title_min_length": "Title must be at least 3 characters",
+        "coin_min": "Coin reward must be at least 1"
+      }
+    },
+    "list": {
+      "heading": "Your Tasks",
+      "pending_count": "{{ count }} pending",
+      "loading": "Loading tasks…",
+      "empty": "No tasks yet. Add your first task above!",
+      "complete_button": "Complete",
+      "complete_aria_label": "Complete \"{{ title }}\" and earn {{ coins }} coins",
+      "completed_badge": "Completed"
+    }
+  }
+}

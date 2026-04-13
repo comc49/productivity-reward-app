@@ -1,1 +1,39 @@
-{}
+{
+  "app": {
+    "name": "Recompensas de Productividad",
+    "tagline": "Completa tareas, gana monedas, desbloquea recompensas"
+  },
+  "common": {
+    "error": "Algo salió mal"
+  },
+  "wallet": {
+    "balance": "Saldo de monedas",
+    "coins": "{{ count }} monedas"
+  },
+  "tasks": {
+    "add": {
+      "heading": "Agregar Nueva Tarea",
+      "title_label": "Título de la Tarea",
+      "title_placeholder": "ej. Leer 30 minutos",
+      "description_label": "Descripción",
+      "description_placeholder": "¿En qué consiste esta tarea?",
+      "optional": "opcional",
+      "coin_reward_label": "Recompensa en Monedas",
+      "submit": "Agregar Tarea",
+      "errors": {
+        "title_required": "El título es obligatorio",
+        "title_min_length": "El título debe tener al menos 3 caracteres",
+        "coin_min": "La recompensa debe ser al menos 1 moneda"
+      }
+    },
+    "list": {
+      "heading": "Tus Tareas",
+      "pending_count": "{{ count }} pendientes",
+      "loading": "Cargando tareas…",
+      "empty": "Aún no hay tareas. ¡Agrega tu primera tarea arriba!",
+      "complete_button": "Completar",
+      "complete_aria_label": "Completar \"{{ title }}\" y ganar {{ coins }} monedas",
+      "completed_badge": "Completada"
+    }
+  }
+}
