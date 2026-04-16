@@ -1,64 +1,36 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { Reward } from './reward.model';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateRewardInput } from './dto/create-reward.input';
 import { TasksService } from '../tasks/tasks.service';
-import { randomUUID } from 'crypto';
+import { Reward } from '@prisma/client';
 
 @Injectable()
 export class RewardsService {
-  private rewards: Reward[] = [
-    {
-      id: randomUUID(),
-      title: '30-minute gaming session',
-      description: 'Guilt-free time to play your favourite game.',
-      coinCost: 50,
-      isRedeemed: false,
-    },
-    {
-      id: randomUUID(),
-      title: 'Order a treat',
-      description: 'Treat yourself to a snack or meal you enjoy.',
-      coinCost: 100,
-      isRedeemed: false,
-    },
-    {
-      id: randomUUID(),
-      title: 'Movie night',
-      description: 'Sit back and watch a film of your choice.',
-      coinCost: 150,
-      isRedeemed: false,
-    },
-  ];
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly tasksService: TasksService,
+  ) {}
 
-  constructor(private readonly tasksService: TasksService) {}
-
-  findAll(): Reward[] {
-    return this.rewards;
+  findAll(): Promise<Reward[]> {
+    return this.prisma.reward.findMany({ orderBy: { createdAt: 'asc' } });
   }
 
-  findOne(id: string): Reward {
-    const reward = this.rewards.find((r) => r.id === id);
+  async findOne(id: string): Promise<Reward> {
+    const reward = await this.prisma.reward.findUnique({ where: { id } });
     if (!reward) throw new NotFoundException(`Reward ${id} not found`);
     return reward;
   }
 
-  create(input: CreateRewardInput): Reward {
-    const reward: Reward = {
-      id: randomUUID(),
-      ...input,
-      isRedeemed: false,
-    };
-    this.rewards.push(reward);
-    return reward;
+  create(input: CreateRewardInput): Promise<Reward> {
+    return this.prisma.reward.create({ data: input });
   }
 
-  redeemReward(id: string): Reward {
-    const reward = this.findOne(id);
+  async redeemReward(id: string): Promise<Reward> {
+    const reward = await this.findOne(id);
     if (reward.isRedeemed) {
       throw new BadRequestException(`Reward "${reward.title}" has already been redeemed`);
     }
-    this.tasksService.spendCoins(reward.coinCost);
-    reward.isRedeemed = true;
-    return reward;
+    await this.tasksService.spendCoins(reward.coinCost);
+    return this.prisma.reward.update({ where: { id }, data: { isRedeemed: true } });
   }
 }

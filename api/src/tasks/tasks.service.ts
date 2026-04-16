@@ -1,76 +1,65 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { Task } from './task.model';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateTaskInput } from './dto/create-task.input';
-import { randomUUID } from 'crypto';
+import { Task } from '@prisma/client';
 
 @Injectable()
 export class TasksService {
-  private tasks: Task[] = [
-    {
-      id: randomUUID(),
-      title: 'Read for 30 minutes',
-      description: 'Read a book or article to expand your knowledge.',
-      coinReward: 20,
-      isCompleted: false,
-    },
-    {
-      id: randomUUID(),
-      title: 'Exercise',
-      description: 'Do at least 30 minutes of physical activity.',
-      coinReward: 50,
-      isCompleted: false,
-    },
-    {
-      id: randomUUID(),
-      title: 'Deep work session',
-      description: 'Complete a 90-minute focused work block with no distractions.',
-      coinReward: 100,
-      isCompleted: false,
-    },
-  ];
+  constructor(private readonly prisma: PrismaService) {}
 
-  private coinBalance = 0;
-
-  findAll(): Task[] {
-    return this.tasks;
+  findAll(): Promise<Task[]> {
+    return this.prisma.task.findMany({ orderBy: { createdAt: 'asc' } });
   }
 
-  findOne(id: string): Task {
-    const task = this.tasks.find((t) => t.id === id);
+  async findOne(id: string): Promise<Task> {
+    const task = await this.prisma.task.findUnique({ where: { id } });
     if (!task) throw new NotFoundException(`Task ${id} not found`);
     return task;
   }
 
-  create(input: CreateTaskInput): Task {
-    const task: Task = {
-      id: randomUUID(),
-      ...input,
-      isCompleted: false,
-    };
-    this.tasks.push(task);
-    return task;
+  create(input: CreateTaskInput): Promise<Task> {
+    return this.prisma.task.create({ data: input });
   }
 
-  completeTask(id: string): Task {
-    const task = this.findOne(id);
+  async completeTask(id: string): Promise<Task> {
+    const task = await this.findOne(id);
     if (task.isCompleted) {
       throw new BadRequestException(`Task "${task.title}" is already completed`);
     }
-    task.isCompleted = true;
-    this.coinBalance += task.coinReward;
-    return task;
+    const [updatedTask] = await this.prisma.$transaction([
+      this.prisma.task.update({ where: { id }, data: { isCompleted: true } }),
+      this.prisma.wallet.upsert({
+        where: { id: 'singleton' },
+        update: { balance: { increment: task.coinReward } },
+        create: { id: 'singleton', balance: task.coinReward },
+      }),
+    ]);
+    return updatedTask;
   }
 
-  getBalance(): number {
-    return this.coinBalance;
+  async getBalance(): Promise<number> {
+    const wallet = await this.prisma.wallet.upsert({
+      where: { id: 'singleton' },
+      update: {},
+      create: { id: 'singleton', balance: 0 },
+    });
+    return wallet.balance;
   }
 
-  spendCoins(amount: number): void {
-    if (amount > this.coinBalance) {
+  async spendCoins(amount: number): Promise<void> {
+    const wallet = await this.prisma.wallet.upsert({
+      where: { id: 'singleton' },
+      update: {},
+      create: { id: 'singleton', balance: 0 },
+    });
+    if (amount > wallet.balance) {
       throw new BadRequestException(
-        `Not enough coins. Have ${this.coinBalance}, need ${amount}`,
+        `Not enough coins. Have ${wallet.balance}, need ${amount}`,
       );
     }
-    this.coinBalance -= amount;
+    await this.prisma.wallet.update({
+      where: { id: 'singleton' },
+      data: { balance: { decrement: amount } },
+    });
   }
 }

@@ -1,0 +1,30 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  coinReward  Int
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Reward {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  coinCost    Int
+  isRedeemed  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Wallet {
+  id      String @id @default("singleton")
+  balance Int    @default(0)
+}

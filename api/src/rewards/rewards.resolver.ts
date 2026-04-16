@@ -8,22 +8,22 @@ export class RewardsResolver {
   constructor(private readonly rewardsService: RewardsService) {}
 
   @Query(() => [Reward], { description: 'List all rewards' })
-  rewards(): Reward[] {
+  rewards(): Promise<Reward[]> {
     return this.rewardsService.findAll();
   }
 
   @Query(() => Reward, { description: 'Get a single reward by ID' })
-  reward(@Args('id', { type: () => ID }) id: string): Reward {
+  reward(@Args('id', { type: () => ID }) id: string): Promise<Reward> {
     return this.rewardsService.findOne(id);
   }
 
   @Mutation(() => Reward, { description: 'Create a new reward' })
-  createReward(@Args('input') input: CreateRewardInput): Reward {
+  createReward(@Args('input') input: CreateRewardInput): Promise<Reward> {
     return this.rewardsService.create(input);
   }
 
   @Mutation(() => Reward, { description: 'Spend coins to redeem a reward' })
-  redeemReward(@Args('id', { type: () => ID }) id: string): Reward {
+  redeemReward(@Args('id', { type: () => ID }) id: string): Promise<Reward> {
     return this.rewardsService.redeemReward(id);
   }
 }
