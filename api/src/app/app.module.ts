@@ -7,6 +7,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { RewardsModule } from '../rewards/rewards.module';
 import { FirebaseModule } from '../firebase/firebase.module';
+import { WatchTimeModule } from '../watch-time/watch-time.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { FirebaseModule } from '../firebase/firebase.module';
     }),
     TasksModule,
     RewardsModule,
+    WatchTimeModule,
   ],
 })
 export class AppModule {}
