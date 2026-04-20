@@ -7,50 +7,53 @@ import { Task } from '@prisma/client';
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findAll(): Promise<Task[]> {
-    return this.prisma.task.findMany({ orderBy: { createdAt: 'asc' } });
+  findAll(userId: string): Promise<Task[]> {
+    return this.prisma.task.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'asc' },
+    });
   }
 
-  async findOne(id: string): Promise<Task> {
-    const task = await this.prisma.task.findUnique({ where: { id } });
+  async findOne(id: string, userId: string): Promise<Task> {
+    const task = await this.prisma.task.findFirst({ where: { id, userId } });
     if (!task) throw new NotFoundException(`Task ${id} not found`);
     return task;
   }
 
-  create(input: CreateTaskInput): Promise<Task> {
-    return this.prisma.task.create({ data: input });
+  create(input: CreateTaskInput, userId: string): Promise<Task> {
+    return this.prisma.task.create({ data: { ...input, userId } });
   }
 
-  async completeTask(id: string): Promise<Task> {
-    const task = await this.findOne(id);
+  async completeTask(id: string, userId: string): Promise<Task> {
+    const task = await this.findOne(id, userId);
     if (task.isCompleted) {
       throw new BadRequestException(`Task "${task.title}" is already completed`);
     }
     const [updatedTask] = await this.prisma.$transaction([
       this.prisma.task.update({ where: { id }, data: { isCompleted: true } }),
       this.prisma.wallet.upsert({
-        where: { id: 'singleton' },
+        where: { userId },
         update: { balance: { increment: task.coinReward } },
-        create: { id: 'singleton', balance: task.coinReward },
+        create: { userId, balance: task.coinReward },
       }),
     ]);
     return updatedTask;
   }
 
-  async getBalance(): Promise<number> {
+  async getBalance(userId: string): Promise<number> {
     const wallet = await this.prisma.wallet.upsert({
-      where: { id: 'singleton' },
+      where: { userId },
       update: {},
-      create: { id: 'singleton', balance: 0 },
+      create: { userId, balance: 0 },
     });
     return wallet.balance;
   }
 
-  async spendCoins(amount: number): Promise<void> {
+  async spendCoins(amount: number, userId: string): Promise<void> {
     const wallet = await this.prisma.wallet.upsert({
-      where: { id: 'singleton' },
+      where: { userId },
       update: {},
-      create: { id: 'singleton', balance: 0 },
+      create: { userId, balance: 0 },
     });
     if (amount > wallet.balance) {
       throw new BadRequestException(
@@ -58,7 +61,7 @@ export class TasksService {
       );
     }
     await this.prisma.wallet.update({
-      where: { id: 'singleton' },
+      where: { userId },
       data: { balance: { decrement: amount } },
     });
   }

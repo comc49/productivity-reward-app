@@ -5,21 +5,25 @@ import {
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { InMemoryCache } from '@apollo/client/core';
 import { provideApollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { provideTransloco } from '@jsverse/transloco';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideAuth, getAuth } from '@angular/fire/auth';
 import { appRoutes } from './app.routes';
 import { TranslocoHttpLoader } from './transloco-loader';
+import { authInterceptor } from './auth/auth.interceptor';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes),
-    // HttpClient is required by both Apollo's HttpLink and Transloco's HTTP loader
-    provideHttpClient(),
-    // Apollo Client — uses Angular's HttpClient so interceptors are applied
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideApollo(() => {
       const httpLink = inject(HttpLink);
       return {

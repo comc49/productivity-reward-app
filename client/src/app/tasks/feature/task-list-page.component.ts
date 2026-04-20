@@ -1,10 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { TasksStore } from '../data-access/tasks.store';
 import { WalletStore } from '../../wallet';
 import { TaskItemComponent } from '../ui/task-item.component';
 import { AddTaskFormComponent } from '../ui/add-task-form.component';
 import { CreateTaskInput } from '../models/task.model';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-task-list-page',
@@ -23,20 +25,42 @@ import { CreateTaskInput } from '../models/task.model';
               <p class="text-xs text-indigo-200">{{ t('app.tagline') }}</p>
             </div>
 
-            <!-- Coin balance — live region so screen readers announce changes -->
-            <div
-              class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5
-                     ring-1 ring-indigo-400"
-              role="status"
-              aria-live="polite"
-              aria-atomic="true"
-              [attr.aria-label]="t('wallet.balance') + ': ' + walletStore.balance() + ' coins'"
-            >
-              <span aria-hidden="true" class="text-lg leading-none">🪙</span>
-              <span class="text-sm font-bold text-white">
-                {{ walletStore.balance() }}
-              </span>
-              <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
+            <div class="flex items-center gap-3">
+              <!-- Coin balance — live region so screen readers announce changes -->
+              <div
+                class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5
+                       ring-1 ring-indigo-400"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                [attr.aria-label]="t('wallet.balance') + ': ' + walletStore.balance() + ' coins'"
+              >
+                <span aria-hidden="true" class="text-lg leading-none">🪙</span>
+                <span class="text-sm font-bold text-white">
+                  {{ walletStore.balance() }}
+                </span>
+                <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
+              </div>
+
+              <!-- User avatar + sign out -->
+              @if (authService.user(); as user) {
+                <div class="flex items-center gap-2">
+                  @if (user.photoURL) {
+                    <img
+                      [src]="user.photoURL"
+                      [alt]="user.displayName ?? 'User'"
+                      class="h-8 w-8 rounded-full ring-2 ring-indigo-400"
+                    />
+                  }
+                  <button
+                    (click)="signOut()"
+                    class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
+                           text-indigo-200 transition hover:bg-indigo-900"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              }
             </div>
           </div>
         </header>
@@ -144,6 +168,8 @@ import { CreateTaskInput } from '../models/task.model';
 export class TaskListPageComponent implements OnInit {
   protected readonly tasksStore = inject(TasksStore);
   protected readonly walletStore = inject(WalletStore);
+  protected readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   ngOnInit(): void {
     this.tasksStore.loadTasks();
@@ -155,5 +181,9 @@ export class TaskListPageComponent implements OnInit {
 
   onCompleteTask(id: string): void {
     this.tasksStore.completeTask(id);
+  }
+
+  signOut(): void {
+    this.authService.signOut().then(() => this.router.navigate(['/']));
   }
 }

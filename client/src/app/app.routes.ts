@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { authGuard } from './auth/auth.guard';
 
 export const appRoutes: Route[] = [
   {
@@ -8,6 +9,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'tasks',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./tasks/feature/task-list-page.component').then(
         (m) => m.TaskListPageComponent
