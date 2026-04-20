@@ -45,6 +45,28 @@ export class WatchTimeService {
     };
   }
 
+  async consumeWatchTime(seconds: number, userId: string): Promise<number> {
+    if (seconds <= 0) throw new BadRequestException('Seconds must be greater than 0');
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { watchBalance: true },
+    });
+
+    const current = user?.watchBalance ?? 0;
+    const deduct = Math.min(seconds, current);
+
+    if (deduct === 0) return 0;
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { watchBalance: { decrement: deduct } },
+      select: { watchBalance: true },
+    });
+
+    return updated.watchBalance;
+  }
+
   async getWatchBalance(userId: string): Promise<number> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },

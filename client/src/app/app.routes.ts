@@ -23,4 +23,12 @@ export const appRoutes: Route[] = [
         (m) => m.VideoSearchPageComponent
       ),
   },
+  {
+    path: 'rewards/videos/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./rewards/feature/video-player-page.component').then(
+        (m) => m.VideoPlayerPageComponent
+      ),
+  },
 ];

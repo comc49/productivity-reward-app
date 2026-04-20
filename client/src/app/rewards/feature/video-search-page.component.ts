@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { catchError, EMPTY, finalize } from 'rxjs';
 import { YouTubeService } from '../data-access/youtube.service';
 import { YouTubeVideo } from '../models/youtube.model';
@@ -133,6 +133,7 @@ import { YouTubeVideo } from '../models/youtube.model';
 })
 export class VideoSearchPageComponent {
   private youtube = inject(YouTubeService);
+  private router = inject(Router);
 
   query = '';
   protected readonly videos = signal<YouTubeVideo[]>([]);
@@ -169,6 +170,6 @@ export class VideoSearchPageComponent {
   }
 
   openVideo(videoId: string): void {
-    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank', 'noopener');
+    this.router.navigate(['/rewards/videos', videoId]);
   }
 }

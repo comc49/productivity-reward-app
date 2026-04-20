@@ -25,4 +25,14 @@ export class WatchTimeResolver {
   ): Promise<WatchTimePurchase> {
     return this.watchTimeService.purchaseWatchTime(minutes, user.id);
   }
+
+  @Mutation(() => Int, {
+    description: 'Consume seconds of watch time while playing a video. Returns remaining balance.',
+  })
+  consumeWatchTime(
+    @Args('seconds', { type: () => Int }) seconds: number,
+    @CurrentUser() user: User,
+  ): Promise<number> {
+    return this.watchTimeService.consumeWatchTime(seconds, user.id);
+  }
 }
