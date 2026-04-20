@@ -16,6 +16,14 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'rewards',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./rewards/feature/rewards-page.component').then(
+        (m) => m.RewardsPageComponent
+      ),
+  },
+  {
     path: 'rewards/videos',
     canActivate: [authGuard],
     loadComponent: () =>

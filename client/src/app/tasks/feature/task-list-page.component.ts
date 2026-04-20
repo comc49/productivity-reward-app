@@ -26,11 +26,11 @@ import { AuthService } from '../../auth/auth.service';
                 <p class="text-xs text-indigo-200">{{ t('app.tagline') }}</p>
               </div>
               <a
-                routerLink="/rewards/videos"
+                routerLink="/rewards"
                 class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
                        text-indigo-200 transition hover:bg-indigo-900 hover:text-white"
               >
-                🎬 Videos
+                🏆 Rewards
               </a>
             </div>
 
