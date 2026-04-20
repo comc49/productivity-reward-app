@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { TasksStore } from '../data-access/tasks.store';
 import { WalletStore } from '../../wallet';
@@ -11,18 +11,27 @@ import { AuthService } from '../../auth/auth.service';
 @Component({
   selector: 'app-task-list-page',
   standalone: true,
-  imports: [TranslocoModule, TaskItemComponent, AddTaskFormComponent],
+  imports: [TranslocoModule, TaskItemComponent, AddTaskFormComponent, RouterLink],
   template: `
     <ng-container *transloco="let t">
       <div class="min-h-screen bg-gray-50">
         <!-- ── Site Header ───────────────────────────────────────────── -->
         <header class="sticky top-0 z-10 border-b border-indigo-800 bg-indigo-700 shadow-md" role="banner">
           <div class="mx-auto flex max-w-2xl items-center justify-between px-4 py-4">
-            <div>
-              <h1 class="text-xl font-bold tracking-tight text-white">
-                {{ t('app.name') }}
-              </h1>
-              <p class="text-xs text-indigo-200">{{ t('app.tagline') }}</p>
+            <div class="flex items-center gap-4">
+              <div>
+                <h1 class="text-xl font-bold tracking-tight text-white">
+                  {{ t('app.name') }}
+                </h1>
+                <p class="text-xs text-indigo-200">{{ t('app.tagline') }}</p>
+              </div>
+              <a
+                routerLink="/rewards/videos"
+                class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
+                       text-indigo-200 transition hover:bg-indigo-900 hover:text-white"
+              >
+                🎬 Videos
+              </a>
             </div>
 
             <div class="flex items-center gap-3">

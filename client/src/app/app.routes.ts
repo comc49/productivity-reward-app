@@ -15,4 +15,12 @@ export const appRoutes: Route[] = [
         (m) => m.TaskListPageComponent
       ),
   },
+  {
+    path: 'rewards/videos',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./rewards/feature/video-search-page.component').then(
+        (m) => m.VideoSearchPageComponent
+      ),
+  },
 ];
