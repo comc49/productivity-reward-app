@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Apollo } from 'apollo-angular';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { WalletStore } from '../../wallet';
 import {
   GET_WATCH_BALANCE,
   PURCHASE_WATCH_TIME,
@@ -19,6 +20,7 @@ export const WatchTimeStore = signalStore(
   withState<WatchTimeState>({ balanceSeconds: 0, isLoading: false, error: null }),
   withMethods(store => {
     const apollo = inject(Apollo);
+    const walletStore = inject(WalletStore);
 
     return {
       async loadBalance(): Promise<void> {
@@ -42,7 +44,10 @@ export const WatchTimeStore = signalStore(
             apollo.mutate({ mutation: PURCHASE_WATCH_TIME, variables: { minutes } }),
           );
           const data = res.data?.purchaseWatchTime;
-          if (data) patchState(store, { balanceSeconds: data.watchBalance });
+          if (data) {
+            patchState(store, { balanceSeconds: data.watchBalance });
+            walletStore.setBalance(data.coinBalance);
+          }
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message : 'Purchase failed';
           patchState(store, { error: msg });

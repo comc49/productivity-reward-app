@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { TasksStore } from '../data-access/tasks.store';
@@ -7,6 +7,7 @@ import { TaskItemComponent } from '../ui/task-item.component';
 import { AddTaskFormComponent } from '../ui/add-task-form.component';
 import { CreateTaskInput } from '../models/task.model';
 import { AuthService } from '../../auth/auth.service';
+import { WatchTimeStore } from '../../rewards/data-access/watch-time.store';
 
 @Component({
   selector: 'app-task-list-page',
@@ -50,6 +51,17 @@ import { AuthService } from '../../auth/auth.service';
                 </span>
                 <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
               </div>
+
+              <!-- Watch time balance -->
+              <a
+                routerLink="/rewards"
+                class="flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1.5
+                       ring-1 ring-indigo-400 transition hover:bg-indigo-500"
+                aria-label="Watch time balance"
+              >
+                <span aria-hidden="true" class="text-sm leading-none">⏱️</span>
+                <span class="text-sm font-bold text-white">{{ formattedWatchBalance() }}</span>
+              </a>
 
               <!-- User avatar + sign out -->
               @if (authService.user(); as user) {
@@ -177,11 +189,22 @@ import { AuthService } from '../../auth/auth.service';
 export class TaskListPageComponent implements OnInit {
   protected readonly tasksStore = inject(TasksStore);
   protected readonly walletStore = inject(WalletStore);
+  protected readonly watchTimeStore = inject(WatchTimeStore);
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
+  protected readonly formattedWatchBalance = computed(() => {
+    const s = this.watchTimeStore.balanceSeconds();
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    if (h > 0) return `${h}h ${String(m).padStart(2, '0')}m`;
+    if (m > 0) return `${m}m`;
+    return `${s}s`;
+  });
+
   ngOnInit(): void {
     this.tasksStore.loadTasks();
+    this.watchTimeStore.loadBalance();
   }
 
   onCreateTask(input: CreateTaskInput): void {
