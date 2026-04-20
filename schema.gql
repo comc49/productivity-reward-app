@@ -18,18 +18,26 @@ type Mutation {
   """Mark a task as completed and earn its coin reward"""
   completeTask(id: ID!): Task!
 
+  """
+  Consume seconds of watch time while playing a video. Returns remaining balance.
+  """
+  consumeWatchTime(seconds: Int!): Int!
+
   """Create a new reward"""
   createReward(input: CreateRewardInput!): Reward!
 
   """Create a new task"""
   createTask(input: CreateTaskInput!): Task!
 
+  """Purchase watch time with coins. Rate: 10 coins = 30 minutes."""
+  purchaseWatchTime(minutes: Int!): WatchTimePurchase!
+
   """Spend coins to redeem a reward"""
   redeemReward(id: ID!): Reward!
 }
 
 type Query {
-  """Get the current coin balance"""
+  """Get the coin balance for the authenticated user"""
   coinBalance: Int!
 
   """Get a single reward by ID"""
@@ -41,8 +49,11 @@ type Query {
   """Get a single task by ID"""
   task(id: ID!): Task!
 
-  """List all tasks"""
+  """List all tasks for the authenticated user"""
   tasks: [Task!]!
+
+  """Get the watch time balance in seconds for the authenticated user"""
+  watchBalance: Int!
 }
 
 type Reward {
@@ -59,4 +70,12 @@ type Task {
   id: ID!
   isCompleted: Boolean!
   title: String!
+}
+
+type WatchTimePurchase {
+  """Updated coin balance after deduction"""
+  coinBalance: Int!
+
+  """Updated watch balance in seconds"""
+  watchBalance: Int!
 }
