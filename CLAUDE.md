@@ -21,3 +21,22 @@
 - The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
 
 <!-- nx configuration end-->
+
+<!-- Angular configuration start-->
+
+## Coding Standards
+### State Management
+- **Always use Angular Signals** for component and service state. 
+- Avoid `BehaviorSubject` or `Observable` for internal component state unless integrating with RxJS-based libraries or streams (e.g., `toObservable`, `toSignal`).
+- Use `computed()` for derived state and `effect()` sparingly for side effects.
+
+### Imports & Architecture
+- **Never use barrel imports** (index.ts files). 
+- Always import directly from the specific file path (e.g., `import { Service } from './services/data.service'`).
+- This is strictly enforced to prevent circular dependencies and improve tree-shaking.
+
+### Style & Patterns
+- Use **Signals-based inputs** (`input()`, `input.required()`) and **model inputs** (`model()`).
+- Prefer functional interceptors and standalone components.
+
+<!-- Angular configuration end-->
