@@ -1,0 +1,5 @@
+{
+  "buildCommand": "node scripts/generate-env.js && npm exec nx -- run client:build",
+  "outputDirectory": "dist/client/browser",
+  "installCommand": "npm install --legacy-peer-deps"
+}
