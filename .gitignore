@@ -53,6 +53,9 @@ test-output
 .env
 .env.local
 
+# Vercel
+.vercel
+
 # Angular environment files with real secrets
 client/src/environments/environment.ts
 client/src/environments/environment.prod.ts
