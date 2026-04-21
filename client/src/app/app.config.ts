@@ -17,6 +17,10 @@ import { TranslocoHttpLoader } from './transloco-loader';
 import { authInterceptor } from './auth/auth.interceptor';
 import { environment } from '../environments/environment';
 
+const graphqlUri = (environment as { apiUrl?: string }).apiUrl
+  ? `${(environment as { apiUrl: string }).apiUrl}/graphql`
+  : '/graphql';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -27,7 +31,7 @@ export const appConfig: ApplicationConfig = {
     provideApollo(() => {
       const httpLink = inject(HttpLink);
       return {
-        link: httpLink.create({ uri: '/graphql' }),
+        link: httpLink.create({ uri: graphqlUri }),
         cache: new InMemoryCache(),
         defaultOptions: {
           watchQuery: { fetchPolicy: 'cache-and-network' },
