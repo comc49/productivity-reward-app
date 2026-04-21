@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Auth, GoogleAuthProvider, signInWithRedirect, signOut, user } from '@angular/fire/auth';
+import { Auth, GoogleAuthProvider, signInWithPopup, signOut, user } from '@angular/fire/auth';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -11,7 +11,7 @@ export class AuthService {
   readonly isLoggedIn = computed(() => !!this.user());
 
   signInWithGoogle(): Promise<void> {
-    return signInWithRedirect(this.auth, new GoogleAuthProvider());
+    return signInWithPopup(this.auth, new GoogleAuthProvider()).then(() => undefined);
   }
 
   signOut(): Promise<void> {

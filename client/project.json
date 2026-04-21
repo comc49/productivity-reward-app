@@ -55,7 +55,10 @@
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "options": {
-        "proxyConfig": "client/proxy.conf.json"
+        "proxyConfig": "client/proxy.conf.json",
+        "headers": {
+          "Cross-Origin-Opener-Policy": "unsafe-none"
+        }
       },
       "configurations": {
         "production": {
