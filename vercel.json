@@ -1,5 +1,6 @@
 {
   "buildCommand": "node scripts/generate-env.js && NX_DAEMON=false npm exec nx -- run client:build",
   "outputDirectory": "dist/client/browser",
-  "installCommand": "npm install --legacy-peer-deps"
+  "installCommand": "npm install --legacy-peer-deps",
+  "framework": null
 }
