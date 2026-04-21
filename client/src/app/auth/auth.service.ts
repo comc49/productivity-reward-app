@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Auth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, user } from '@angular/fire/auth';
+import { Auth, GoogleAuthProvider, signInWithRedirect, signOut, user } from '@angular/fire/auth';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
