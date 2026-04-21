@@ -39,4 +39,28 @@ export const appRoutes: Route[] = [
         (m) => m.VideoPlayerPageComponent
       ),
   },
+  {
+    path: 'news',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./news/feature/news-shop-page.component').then(
+        (m) => m.NewsShopPageComponent
+      ),
+  },
+  {
+    path: 'news/sites',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./news/feature/news-sites-page.component').then(
+        (m) => m.NewsSitesPageComponent
+      ),
+  },
+  {
+    path: 'news/read/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./news/feature/news-timer-page.component').then(
+        (m) => m.NewsTimerPageComponent
+      ),
+  },
 ];

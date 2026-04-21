@@ -18,6 +18,9 @@ type Mutation {
   """Mark a task as completed and earn its coin reward"""
   completeTask(id: ID!): Task!
 
+  """Consume seconds of news reading time. Returns remaining balance."""
+  consumeNewsTime(seconds: Int!): Int!
+
   """
   Consume seconds of watch time while playing a video. Returns remaining balance.
   """
@@ -29,6 +32,9 @@ type Mutation {
   """Create a new task"""
   createTask(input: CreateTaskInput!): Task!
 
+  """Purchase news reading time with coins. Rate: 10 coins = 30 minutes."""
+  purchaseNewsTime(minutes: Int!): NewsTimePurchase!
+
   """Purchase watch time with coins. Rate: 10 coins = 30 minutes."""
   purchaseWatchTime(minutes: Int!): WatchTimePurchase!
 
@@ -36,9 +42,20 @@ type Mutation {
   redeemReward(id: ID!): Reward!
 }
 
+type NewsTimePurchase {
+  """Updated coin balance after deduction"""
+  coinBalance: Int!
+
+  """Updated news balance in seconds"""
+  newsBalance: Int!
+}
+
 type Query {
   """Get the coin balance for the authenticated user"""
   coinBalance: Int!
+
+  """Get the news reading balance in seconds for the authenticated user"""
+  newsBalance: Int!
 
   """Get a single reward by ID"""
   reward(id: ID!): Reward!

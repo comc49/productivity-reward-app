@@ -8,6 +8,7 @@ import { TasksModule } from '../tasks/tasks.module';
 import { RewardsModule } from '../rewards/rewards.module';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { WatchTimeModule } from '../watch-time/watch-time.module';
+import { NewsTimeModule } from '../news-time/news-time.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { WatchTimeModule } from '../watch-time/watch-time.module';
     TasksModule,
     RewardsModule,
     WatchTimeModule,
+    NewsTimeModule,
   ],
 })
 export class AppModule {}

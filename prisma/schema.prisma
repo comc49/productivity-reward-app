@@ -12,6 +12,7 @@ model User {
   email        String?
   displayName  String?
   watchBalance Int      @default(0)
+  newsBalance  Int      @default(0)
   createdAt    DateTime @default(now())
   tasks        Task[]
   wallet       Wallet?

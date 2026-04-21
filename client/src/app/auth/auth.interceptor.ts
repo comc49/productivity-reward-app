@@ -7,7 +7,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const currentUser = authService.user();
 
-  if (!currentUser) return next(req);
+  if (!currentUser || req.url.startsWith('https://')) return next(req);
 
   return from(currentUser.getIdToken()).pipe(
     switchMap(token => {
