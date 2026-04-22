@@ -1,6 +1,6 @@
 {
-  "buildCommand": "node scripts/generate-env.js && NX_DAEMON=false npm exec nx -- run client:build",
+  "buildCommand": "node scripts/generate-env.js && NX_DAEMON=false pnpm nx run client:build",
   "outputDirectory": "dist/client/browser",
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "framework": null
 }

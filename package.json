@@ -2,8 +2,9 @@
   "name": "@org/source",
   "version": "0.0.0",
   "license": "MIT",
+  "packageManager": "pnpm@10.33.1",
   "scripts": {
-    "vercel-build": "node scripts/generate-env.js && npm exec nx -- run client:build",
+    "vercel-build": "node scripts/generate-env.js && pnpm nx run client:build",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
@@ -14,6 +15,24 @@
     "seed": "node --require @swc-node/register prisma/seed.ts"
   },
   "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@apollo/protobufjs",
+      "@firebase/util",
+      "@nestjs/core",
+      "@parcel/watcher",
+      "@prisma/engines",
+      "@swc/core",
+      "esbuild",
+      "less",
+      "lmdb",
+      "msgpackr-extract",
+      "nx",
+      "prisma",
+      "protobufjs",
+      "unrs-resolver"
+    ]
+  },
   "devDependencies": {
     "@angular-devkit/core": "~21.2.0",
     "@angular-devkit/schematics": "~21.2.0",
@@ -60,11 +79,6 @@
     "vitest": "^4.1.4",
     "webpack-cli": "^5.1.4"
   },
-  "workspaces": [
-    "packages/*",
-    "api",
-    "api-e2e"
-  ],
   "dependencies": {
     "@angular/common": "~21.2.0",
     "@angular/compiler": "~21.2.0",
