@@ -1,0 +1,8 @@
+[build]
+builder = "nixpacks"
+buildCommand = "pnpm install --frozen-lockfile && pnpm nx run @org/api:build"
+
+[deploy]
+startCommand = "pnpm prisma migrate deploy && node api/dist/main.js"
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 3
