@@ -59,3 +59,5 @@ test-output
 # Angular environment files with real secrets
 client/src/environments/environment.ts
 client/src/environments/environment.prod.ts
+budget-dashboard/src/environments/environment.ts
+budget-dashboard/src/environments/environment.prod.ts

@@ -11,6 +11,9 @@
     },
     {
       "path": "./client"
+    },
+    {
+      "path": "./budget-dashboard"
     }
   ]
 }
