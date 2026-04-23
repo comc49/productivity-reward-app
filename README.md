@@ -8,6 +8,8 @@ Complete tasks → earn coins → spend coins on YouTube watch time.
 - **Backend** — NestJS, GraphQL (Apollo), Prisma 7, PostgreSQL
 - **Auth** — Firebase Authentication (Google Sign-In)
 - **Monorepo** — Nx
+- **Cloud** — Neon for db, Railway for backend, vercel for frontend
+
 
 ---
 
