@@ -4,7 +4,7 @@ import {
   isDevMode,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withNavigationErrorHandler } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { InMemoryCache } from '@apollo/client/core';
 import { provideApollo } from 'apollo-angular';
@@ -24,7 +24,14 @@ const graphqlUri = (environment as { apiUrl?: string }).apiUrl
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(appRoutes),
+    provideRouter(
+      appRoutes,
+      withNavigationErrorHandler(e => {
+        if (e.error?.message?.includes('Failed to fetch')) {
+          window.location.assign(e.url);
+        }
+      }),
+    ),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideHttpClient(withInterceptors([authInterceptor])),
