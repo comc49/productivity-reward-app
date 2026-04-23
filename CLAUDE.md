@@ -40,3 +40,8 @@
 - Prefer functional interceptors and standalone components.
 
 <!-- Angular configuration end-->
+
+
+<!-- personal configuration start-->
+- Please double check your work
+<!-- personal configuration end-->

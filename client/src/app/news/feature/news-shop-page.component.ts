@@ -1,13 +1,9 @@
 import { Component, inject, computed, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NewsTimeStore } from '../data-access/news-time.store';
+import { buildPackages, formatMinutes } from '../../shared/time-packages';
 
-const PACKAGES = [
-  { minutes: 30,  coins: 10,  label: 'Starter',  description: '30 min of reading time' },
-  { minutes: 60,  coins: 20,  label: 'Standard',  description: '1 hour of reading time' },
-  { minutes: 120, coins: 40,  label: 'Extended',  description: '2 hours of reading time' },
-  { minutes: 300, coins: 100, label: 'Marathon',  description: '5 hours of reading time' },
-];
+const PACKAGES = buildPackages('reading time');
 
 @Component({
   selector: 'app-news-shop-page',
@@ -145,6 +141,7 @@ const PACKAGES = [
 export class NewsShopPageComponent implements OnInit {
   protected readonly store = inject(NewsTimeStore);
   protected readonly packages = PACKAGES;
+  protected readonly formatMinutes = formatMinutes;
   protected readonly purchasing = signal<number | null>(null);
   protected readonly successMessage = signal<string | null>(null);
 
@@ -166,13 +163,6 @@ export class NewsShopPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.loadBalance();
-  }
-
-  protected formatMinutes(minutes: number): string {
-    if (minutes < 60) return `${minutes} min`;
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return m > 0 ? `${h}h ${m}m` : `${h}h`;
   }
 
   protected async purchase(minutes: number, coins: number): Promise<void> {
