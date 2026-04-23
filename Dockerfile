@@ -12,7 +12,7 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN pnpm nx run @org/api:build
+RUN pnpm prisma generate && pnpm nx run @org/api:build
 
 EXPOSE 3000
 
