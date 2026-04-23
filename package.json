@@ -103,9 +103,11 @@
     "@softarc/sheriff-core": "^0.19.6",
     "apollo-angular": "^13.0.0",
     "axios": "^1.6.0",
+    "chart.js": "^4.5.1",
     "firebase": "^12.12.0",
     "firebase-admin": "^13.8.0",
     "graphql": "^16.13.2",
+    "ng2-charts": "^10.0.0",
     "pg": "^8.20.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0"

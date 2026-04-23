@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SubscriptionsStore } from './data-access/subscriptions.store';
 import { SubscriptionCategory, UsageRating } from './data-access/subscriptions.graphql';
+import { InsightsSectionComponent } from './insights-section.component';
 
 type CostMode = 'month' | 'year';
 
@@ -50,7 +51,7 @@ const USAGE_LABELS: Record<UsageRating, string> = {
 @Component({
   selector: 'app-budget-page',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, InsightsSectionComponent],
   template: `
     <div class="min-h-screen bg-gray-50">
       <div class="max-w-3xl mx-auto px-4 py-10">
@@ -226,6 +227,9 @@ const USAGE_LABELS: Record<UsageRating, string> = {
             <span class="text-lg font-bold text-indigo-900">\${{ totalMonthly() | number:'1.2-2' }}</span>
           </div>
         }
+
+        <!-- Insights -->
+        <app-insights-section [subscriptions]="store.subscriptions()" />
 
       </div>
     </div>
