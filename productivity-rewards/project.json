@@ -10,7 +10,7 @@
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/client",
+        "outputPath": "dist/productivity-rewards",
         "browser": "productivity-rewards/src/main.ts",
         "tsConfig": "productivity-rewards/tsconfig.app.json",
         "assets": [
@@ -86,7 +86,7 @@
       "executor": "@nx/web:file-server",
       "options": {
         "buildTarget": "productivity-rewards:build",
-        "staticFilePath": "dist/client/browser",
+        "staticFilePath": "dist/productivity-rewards/browser",
         "spa": true
       }
     }
