@@ -4,7 +4,7 @@
   "license": "MIT",
   "packageManager": "pnpm@10.33.1",
   "scripts": {
-    "vercel-build": "node scripts/generate-env.js && pnpm nx run client:build",
+    "vercel-build": "node scripts/generate-env.js && pnpm nx run productivity-rewards:build",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
