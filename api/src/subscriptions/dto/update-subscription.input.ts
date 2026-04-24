@@ -1,5 +1,6 @@
 import { Field, Float, ID, InputType } from '@nestjs/graphql';
-import { SubscriptionCategory, UsageRating } from '@prisma/client';
+import type { SubscriptionCategory, UsageRating } from '@prisma/client';
+import { SubscriptionCategoryEnum, UsageRatingEnum } from '../subscription.model';
 
 @InputType()
 export class UpdateSubscriptionInput {
@@ -12,7 +13,7 @@ export class UpdateSubscriptionInput {
   @Field({ nullable: true })
   company?: string;
 
-  @Field(() => SubscriptionCategory, { nullable: true })
+  @Field(() => SubscriptionCategoryEnum, { nullable: true })
   category?: SubscriptionCategory;
 
   @Field(() => Float, { nullable: true })
@@ -24,6 +25,6 @@ export class UpdateSubscriptionInput {
   @Field({ nullable: true })
   renewsAt?: Date;
 
-  @Field(() => UsageRating, { nullable: true })
+  @Field(() => UsageRatingEnum, { nullable: true })
   usageRating?: UsageRating;
 }

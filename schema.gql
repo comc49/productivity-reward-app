@@ -8,11 +8,25 @@ input CreateRewardInput {
   title: String!
 }
 
+input CreateSubscriptionInput {
+  category: SubscriptionCategory!
+  company: String!
+  costPerMonth: Float
+  costPerYear: Float
+  name: String!
+  renewsAt: DateTime!
+}
+
 input CreateTaskInput {
   coinReward: Int!
   description: String
   title: String!
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type Mutation {
   """Mark a task as completed and earn its coin reward"""
@@ -28,9 +42,11 @@ type Mutation {
 
   """Create a new reward"""
   createReward(input: CreateRewardInput!): Reward!
+  createSubscription(input: CreateSubscriptionInput!): Subscription!
 
   """Create a new task"""
   createTask(input: CreateTaskInput!): Task!
+  deleteSubscription(id: ID!): Subscription!
 
   """Purchase news reading time with coins. Rate: 10 coins = 30 minutes."""
   purchaseNewsTime(minutes: Int!): NewsTimePurchase!
@@ -40,6 +56,7 @@ type Mutation {
 
   """Spend coins to redeem a reward"""
   redeemReward(id: ID!): Reward!
+  updateSubscription(input: UpdateSubscriptionInput!): Subscription!
 }
 
 type NewsTimePurchase {
@@ -62,6 +79,7 @@ type Query {
 
   """List all rewards"""
   rewards: [Reward!]!
+  subscriptions: [Subscription!]!
 
   """Get a single task by ID"""
   task(id: ID!): Task!
@@ -81,12 +99,51 @@ type Reward {
   title: String!
 }
 
+type Subscription {
+  category: SubscriptionCategory!
+  company: String!
+  costPerMonth: Float
+  costPerYear: Float
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  renewsAt: DateTime!
+  updatedAt: DateTime!
+  usageRating: UsageRating!
+}
+
+enum SubscriptionCategory {
+  EDUCATION
+  ENTERTAINMENT
+  FINANCE
+  HEALTH
+  OTHER
+  PRODUCTIVITY
+}
+
 type Task {
   coinReward: Int!
   description: String
   id: ID!
   isCompleted: Boolean!
   title: String!
+}
+
+input UpdateSubscriptionInput {
+  category: SubscriptionCategory
+  company: String
+  costPerMonth: Float
+  costPerYear: Float
+  id: ID!
+  name: String
+  renewsAt: DateTime
+  usageRating: UsageRating
+}
+
+enum UsageRating {
+  ACTIVE
+  NEVER
+  RARELY
 }
 
 type WatchTimePurchase {

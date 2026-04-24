@@ -1,11 +1,26 @@
 import { Field, Float, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { SubscriptionCategory, UsageRating } from '@prisma/client';
+import type { SubscriptionCategory, UsageRating } from '@prisma/client';
 
-registerEnumType(SubscriptionCategory, { name: 'SubscriptionCategory' });
-registerEnumType(UsageRating, { name: 'UsageRating' });
+export const SubscriptionCategoryEnum = {
+  ENTERTAINMENT: 'ENTERTAINMENT',
+  PRODUCTIVITY: 'PRODUCTIVITY',
+  HEALTH: 'HEALTH',
+  FINANCE: 'FINANCE',
+  EDUCATION: 'EDUCATION',
+  OTHER: 'OTHER',
+} as const;
 
-@ObjectType()
-export class Subscription {
+export const UsageRatingEnum = {
+  ACTIVE: 'ACTIVE',
+  RARELY: 'RARELY',
+  NEVER: 'NEVER',
+} as const;
+
+registerEnumType(SubscriptionCategoryEnum, { name: 'SubscriptionCategory' });
+registerEnumType(UsageRatingEnum, { name: 'UsageRating' });
+
+@ObjectType('Subscription')
+export class SubscriptionItem {
   @Field(() => ID)
   id: string;
 
@@ -15,7 +30,7 @@ export class Subscription {
   @Field()
   company: string;
 
-  @Field(() => SubscriptionCategory)
+  @Field(() => SubscriptionCategoryEnum)
   category: SubscriptionCategory;
 
   @Field(() => Float, { nullable: true })
@@ -27,7 +42,7 @@ export class Subscription {
   @Field()
   renewsAt: Date;
 
-  @Field(() => UsageRating)
+  @Field(() => UsageRatingEnum)
   usageRating: UsageRating;
 
   @Field()

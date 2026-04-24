@@ -1,5 +1,6 @@
 import { Field, Float, InputType } from '@nestjs/graphql';
-import { SubscriptionCategory } from '@prisma/client';
+import type { SubscriptionCategory } from '@prisma/client';
+import { SubscriptionCategoryEnum } from '../subscription.model';
 
 @InputType()
 export class CreateSubscriptionInput {
@@ -9,7 +10,7 @@ export class CreateSubscriptionInput {
   @Field()
   company: string;
 
-  @Field(() => SubscriptionCategory)
+  @Field(() => SubscriptionCategoryEnum)
   category: SubscriptionCategory;
 
   @Field(() => Float, { nullable: true })
