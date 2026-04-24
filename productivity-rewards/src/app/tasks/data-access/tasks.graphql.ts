@@ -34,6 +34,18 @@ export const COMPLETE_TASK: TypedDocumentNode<CompleteTaskResult, { id: string }
   }
 `;
 
+export interface DeleteTaskResult {
+  deleteTask: Pick<Task, 'id'>;
+}
+
+export const DELETE_TASK: TypedDocumentNode<DeleteTaskResult, { id: string }> = gql`
+  mutation DeleteTask($id: ID!) {
+    deleteTask(id: $id) {
+      id
+    }
+  }
+`;
+
 export interface CreateTaskResult {
   createTask: Task;
 }

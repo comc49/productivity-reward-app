@@ -99,6 +99,20 @@ import { Task } from '../models/task.model';
             {{ t('complete_button') }}
           </button>
         }
+
+        <!-- Delete action (completed tasks only) -->
+        @if (task().isCompleted) {
+          <button
+            type="button"
+            class="shrink-0 rounded-lg bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-600
+                   shadow-sm transition hover:bg-red-200
+                   focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+            [attr.aria-label]="'Delete task: ' + task().title"
+            (click)="delete.emit(task().id)"
+          >
+            Delete
+          </button>
+        }
       </article>
     </ng-container>
   `,
@@ -106,4 +120,5 @@ import { Task } from '../models/task.model';
 export class TaskItemComponent {
   readonly task = input.required<Task>();
   readonly complete = output<string>();
+  readonly delete = output<string>();
 }

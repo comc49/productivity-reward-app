@@ -175,6 +175,7 @@ import { WatchTimeStore } from '../../rewards/data-access/watch-time.store';
                     <app-task-item
                       [task]="task"
                       (complete)="onCompleteTask($event)"
+                      (delete)="onDeleteTask($event)"
                     />
                   </li>
                 }
@@ -213,6 +214,10 @@ export class TaskListPageComponent implements OnInit {
 
   onCompleteTask(id: string): void {
     this.tasksStore.completeTask(id);
+  }
+
+  onDeleteTask(id: string): void {
+    this.tasksStore.deleteTask(id);
   }
 
   signOut(): void {

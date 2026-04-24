@@ -45,4 +45,12 @@ export class TasksResolver {
   ): Promise<Task> {
     return this.tasksService.completeTask(id, user.id);
   }
+
+  @Mutation(() => Task, { description: 'Delete a completed task' })
+  deleteTask(
+    @Args('id', { type: () => ID }) id: string,
+    @CurrentUser() user: User,
+  ): Promise<Task> {
+    return this.tasksService.deleteTask(id, user.id);
+  }
 }
