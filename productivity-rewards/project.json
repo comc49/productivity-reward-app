@@ -1,9 +1,9 @@
 {
-  "name": "client",
+  "name": "productivity-rewards",
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "client/src",
+  "sourceRoot": "productivity-rewards/src",
   "tags": [],
   "targets": {
     "build": {
@@ -11,22 +11,22 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/client",
-        "browser": "client/src/main.ts",
-        "tsConfig": "client/tsconfig.app.json",
+        "browser": "productivity-rewards/src/main.ts",
+        "tsConfig": "productivity-rewards/tsconfig.app.json",
         "assets": [
           {
             "glob": "**/*",
-            "input": "client/public"
+            "input": "productivity-rewards/public"
           }
         ],
-        "styles": ["client/src/styles.css"]
+        "styles": ["productivity-rewards/src/styles.css"]
       },
       "configurations": {
         "production": {
           "fileReplacements": [
             {
-              "replace": "client/src/environments/environment.ts",
-              "with": "client/src/environments/environment.prod.ts"
+              "replace": "productivity-rewards/src/environments/environment.ts",
+              "with": "productivity-rewards/src/environments/environment.prod.ts"
             }
           ],
           "budgets": [
@@ -55,17 +55,17 @@
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "options": {
-        "proxyConfig": "client/proxy.conf.json",
+        "proxyConfig": "productivity-rewards/proxy.conf.json",
         "headers": {
           "Cross-Origin-Opener-Policy": "unsafe-none"
         }
       },
       "configurations": {
         "production": {
-          "buildTarget": "client:build:production"
+          "buildTarget": "productivity-rewards:build:production"
         },
         "development": {
-          "buildTarget": "client:build:development"
+          "buildTarget": "productivity-rewards:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -76,8 +76,8 @@
     "test": {
       "executor": "@nx/angular:unit-test",
       "options": {
-        "buildTarget": "client:build:development",
-        "tsConfig": "client/tsconfig.spec.json",
+        "buildTarget": "productivity-rewards:build:development",
+        "tsConfig": "productivity-rewards/tsconfig.spec.json",
         "runner": "vitest"
       }
     },
@@ -85,7 +85,7 @@
       "continuous": true,
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "client:build",
+        "buildTarget": "productivity-rewards:build",
         "staticFilePath": "dist/client/browser",
         "spa": true
       }

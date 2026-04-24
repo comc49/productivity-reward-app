@@ -36,7 +36,7 @@ Copy the example files and fill in your credentials:
 
 ```bash
 cp .env.example .env
-cp client/src/environments/environment.example.ts client/src/environments/environment.ts
+cp productivity-rewards/src/environments/environment.example.ts productivity-rewards/src/environments/environment.ts
 ```
 
 **`.env`** (backend):
@@ -48,7 +48,7 @@ cp client/src/environments/environment.example.ts client/src/environments/enviro
 | `FIREBASE_PRIVATE_KEY` | Same service account JSON |
 | `YOUTUBE_API_KEY` | Google Cloud Console → APIs → YouTube Data API v3 |
 
-**`client/src/environments/environment.ts`** (frontend):
+**`productivity-rewards/src/environments/environment.ts`** (frontend):
 | Variable | Where to get it |
 |---|---|
 | `firebase.*` | Firebase Console → Project Settings → Your apps → Web app config |

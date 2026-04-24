@@ -15,6 +15,6 @@ const env = `export const environment = {
 };
 `;
 
-fs.writeFileSync('client/src/environments/environment.ts', env);
-fs.writeFileSync('client/src/environments/environment.prod.ts', env);
+fs.writeFileSync('productivity-rewards/src/environments/environment.ts', env);
+fs.writeFileSync('productivity-rewards/src/environments/environment.prod.ts', env);
 console.log('Generated environment.ts');
