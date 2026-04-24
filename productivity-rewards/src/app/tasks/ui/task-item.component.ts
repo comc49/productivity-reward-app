@@ -54,7 +54,7 @@ import { Task } from '../models/task.model';
           @if (task().description) {
             <p
               [id]="'task-desc-' + task().id"
-              class="mt-0.5 text-xs text-gray-500 line-clamp-2"
+              class="mt-0.5 text-xs text-gray-500 line-clamp-5"
             >
               {{ task().description }}
             </p>
