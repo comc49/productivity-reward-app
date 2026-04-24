@@ -1,9 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { catchError, EMPTY, finalize } from 'rxjs';
-import { YouTubeService } from '../data-access/youtube.service';
-import { YouTubeVideo } from '../models/youtube.model';
+import { VideoSearchStore } from '../data-access/video-search.store';
 
 @Component({
   selector: 'app-video-search-page',
@@ -26,41 +24,42 @@ import { YouTubeVideo } from '../models/youtube.model';
         <form (ngSubmit)="onSearch()" class="flex gap-3">
           <input
             type="search"
-            [(ngModel)]="query"
+            [value]="searchStore.query()"
+            (input)="searchStore.setQuery($any($event.target).value)"
             name="query"
             placeholder="Search YouTube videos…"
             class="flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3
                    text-sm shadow-sm outline-none transition
                    focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-            [disabled]="loading()"
+            [disabled]="searchStore.loading()"
           />
           <button
             type="submit"
-            [disabled]="!query.trim() || loading()"
+            [disabled]="!searchStore.query().trim() || searchStore.loading()"
             class="rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white
                    shadow-sm transition hover:bg-indigo-700 disabled:opacity-50"
           >
-            @if (loading()) { Searching… } @else { Search }
+            @if (searchStore.loading()) { Searching… } @else { Search }
           </button>
         </form>
 
         <!-- Error -->
-        @if (error()) {
+        @if (searchStore.error()) {
           <div class="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-            {{ error() }}
+            {{ searchStore.error() }}
           </div>
         }
 
         <!-- Empty state -->
-        @if (!loading() && !error() && hasSearched() && videos().length === 0) {
+        @if (!searchStore.loading() && !searchStore.error() && searchStore.hasSearched() && searchStore.videos().length === 0) {
           <div class="mt-16 text-center text-gray-400">
-            <p class="text-lg">No results found for "{{ lastQuery() }}"</p>
+            <p class="text-lg">No results found for "{{ searchStore.lastQuery() }}"</p>
             <p class="mt-1 text-sm">Try a different keyword.</p>
           </div>
         }
 
         <!-- Initial prompt -->
-        @if (!hasSearched() && !loading()) {
+        @if (!searchStore.hasSearched() && !searchStore.loading()) {
           <div class="mt-16 text-center text-gray-400">
             <span class="text-5xl">🎬</span>
             <p class="mt-4 text-lg font-medium text-gray-500">Search for videos to watch</p>
@@ -69,7 +68,7 @@ import { YouTubeVideo } from '../models/youtube.model';
         }
 
         <!-- Loading skeleton -->
-        @if (loading()) {
+        @if (searchStore.loading()) {
           <div class="mt-8 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             @for (_ of skeletons; track $index) {
               <div class="animate-pulse rounded-2xl bg-white shadow-sm">
@@ -84,12 +83,12 @@ import { YouTubeVideo } from '../models/youtube.model';
         }
 
         <!-- Results grid -->
-        @if (!loading() && videos().length > 0) {
+        @if (!searchStore.loading() && searchStore.videos().length > 0) {
           <p class="mt-6 mb-3 text-sm text-gray-500">
-            Results for <span class="font-medium text-gray-700">"{{ lastQuery() }}"</span>
+            Results for <span class="font-medium text-gray-700">"{{ searchStore.lastQuery() }}"</span>
           </p>
           <div class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            @for (video of videos(); track video.id) {
+            @for (video of searchStore.videos(); track video.id) {
               <article
                 class="group flex flex-col rounded-2xl bg-white shadow-sm ring-1 ring-gray-100
                        transition hover:shadow-md hover:ring-indigo-200 cursor-pointer"
@@ -132,41 +131,13 @@ import { YouTubeVideo } from '../models/youtube.model';
   `,
 })
 export class VideoSearchPageComponent {
-  private youtube = inject(YouTubeService);
+  protected readonly searchStore = inject(VideoSearchStore);
   private router = inject(Router);
 
-  query = '';
-  protected readonly videos = signal<YouTubeVideo[]>([]);
-  protected readonly loading = signal(false);
-  protected readonly error = signal<string | null>(null);
-  protected readonly hasSearched = signal(false);
-  protected readonly lastQuery = signal('');
   protected readonly skeletons = Array(8);
 
   onSearch(): void {
-    const q = this.query.trim();
-    if (!q) return;
-
-    this.loading.set(true);
-    this.error.set(null);
-    this.videos.set([]);
-    this.lastQuery.set(q);
-
-    this.youtube
-      .search(q)
-      .pipe(
-        catchError(err => {
-          this.error.set(
-            err?.error?.error?.message ?? 'Failed to search. Check your YouTube API key.',
-          );
-          return EMPTY;
-        }),
-        finalize(() => {
-          this.loading.set(false);
-          this.hasSearched.set(true);
-        }),
-      )
-      .subscribe(results => this.videos.set(results));
+    this.searchStore.search();
   }
 
   openVideo(videoId: string): void {

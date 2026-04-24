@@ -88,6 +88,7 @@ export const TasksStore = signalStore(
       },
 
       async deleteTask(id: string): Promise<void> {
+        const snapshot = store.tasks();
         patchState(store, (s) => ({
           tasks: s.tasks.filter((t) => t.id !== id),
         }));
@@ -96,7 +97,7 @@ export const TasksStore = signalStore(
             apollo.mutate({ mutation: DELETE_TASK, variables: { id } })
           );
         } catch {
-          patchState(store, { error: 'Failed to delete task' });
+          patchState(store, { tasks: snapshot, error: 'Failed to delete task' });
         }
       },
 
