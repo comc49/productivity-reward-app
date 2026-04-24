@@ -13,6 +13,7 @@ import { WalletStore } from '../../wallet';
 import {
   COMPLETE_TASK,
   CREATE_TASK,
+  DELETE_TASK,
   GET_TASKS,
 } from './tasks.graphql';
 
@@ -83,6 +84,20 @@ export const TasksStore = signalStore(
             ),
             error: 'Failed to complete task',
           }));
+        }
+      },
+
+      async deleteTask(id: string): Promise<void> {
+        const snapshot = store.tasks();
+        patchState(store, (s) => ({
+          tasks: s.tasks.filter((t) => t.id !== id),
+        }));
+        try {
+          await firstValueFrom(
+            apollo.mutate({ mutation: DELETE_TASK, variables: { id } })
+          );
+        } catch {
+          patchState(store, { tasks: snapshot, error: 'Failed to delete task' });
         }
       },
 

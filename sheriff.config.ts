@@ -6,7 +6,7 @@ export const sheriffConfig: SheriffConfig = {
    * Entry points let Sheriff trace the full import graph for each project.
    */
   entryPoints: {
-    client: 'client/src/main.ts',
+    client: 'productivity-rewards/src/main.ts',
     api: 'api/src/main.ts',
   },
   /**
@@ -15,8 +15,8 @@ export const sheriffConfig: SheriffConfig = {
    * Paths are relative to this config file (workspace root).
    */
   modules: {
-    'client/src/app/wallet': 'scope:wallet',
-    'client/src/app/tasks': 'scope:tasks',
+    'productivity-rewards/src/app/wallet': 'scope:wallet',
+    'productivity-rewards/src/app/tasks': 'scope:tasks',
     'api/src': 'scope:api',
   },
   depRules: {

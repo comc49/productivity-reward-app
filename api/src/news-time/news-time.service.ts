@@ -2,7 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NewsTimePurchase } from './news-time-purchase.model';
 
-const COINS_PER_30_MIN = 10;
+const COINS_PER_10_MIN = 10;
 
 @Injectable()
 export class NewsTimeService {
@@ -11,7 +11,7 @@ export class NewsTimeService {
   async purchaseNewsTime(minutes: number, userId: string): Promise<NewsTimePurchase> {
     if (minutes <= 0) throw new BadRequestException('Minutes must be greater than 0');
 
-    const coinsRequired = Math.ceil((minutes / 30) * COINS_PER_30_MIN);
+    const coinsRequired = Math.ceil((minutes / 30) * COINS_PER_10_MIN);
     const secondsToAdd = minutes * 60;
 
     const wallet = await this.prisma.wallet.upsert({

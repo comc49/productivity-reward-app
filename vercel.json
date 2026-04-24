@@ -1,6 +1,6 @@
 {
-  "buildCommand": "node scripts/generate-env.js && NX_DAEMON=false pnpm nx run client:build",
-  "outputDirectory": "dist/client/browser",
+  "buildCommand": "node scripts/generate-env.js && NX_DAEMON=false pnpm nx run productivity-rewards:build",
+  "outputDirectory": "dist/productivity-rewards/browser",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "framework": null
 }

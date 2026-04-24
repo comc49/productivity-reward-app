@@ -4,7 +4,7 @@ import { NewsTimeStore } from '../data-access/news-time.store';
 import { NEWS_SITES, NewsSite } from './news-sites-page.component';
 
 const CONSUME_INTERVAL_S = 10;
-const COINS_PER_30_MIN = 10;
+const COINS_PER_10_MIN = 10;
 
 type TimerState = 'ready' | 'running' | 'paused' | 'done' | 'blocked';
 
@@ -203,9 +203,9 @@ export class NewsTimerPageComponent implements OnInit, OnDestroy {
   });
 
   protected readonly purchaseOptions = [
-    { minutes: 30, coins: COINS_PER_30_MIN },
-    { minutes: 60, coins: COINS_PER_30_MIN * 2 },
-    { minutes: 90, coins: COINS_PER_30_MIN * 3 },
+    { minutes: 30, coins: COINS_PER_10_MIN },
+    { minutes: 60, coins: COINS_PER_10_MIN * 2 },
+    { minutes: 90, coins: COINS_PER_10_MIN * 3 },
   ];
 
   ngOnInit(): void {
