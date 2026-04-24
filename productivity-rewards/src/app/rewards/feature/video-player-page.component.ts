@@ -31,7 +31,7 @@ interface YTWindow {
 type PlayerState = 'idle' | 'playing' | 'paused' | 'ended' | 'blocked';
 
 const CONSUME_INTERVAL_S = 10;
-const COINS_PER_30_MIN = 10;
+const COINS_PER_10_MIN = 10;
 
 @Component({
   selector: 'app-video-player-page',
@@ -146,9 +146,9 @@ export class VideoPlayerPageComponent implements OnInit, OnDestroy {
   });
 
   protected readonly watchOptions = [
-    { minutes: 30, coins: COINS_PER_30_MIN },
-    { minutes: 60, coins: COINS_PER_30_MIN * 2 },
-    { minutes: 90, coins: COINS_PER_30_MIN * 3 },
+    { minutes: 10, coins: COINS_PER_10_MIN },
+    { minutes: 20, coins: COINS_PER_10_MIN * 2 },
+    { minutes: 30, coins: COINS_PER_10_MIN * 3 },
   ];
 
   ngOnInit(): void {
