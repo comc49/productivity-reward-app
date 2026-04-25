@@ -13,7 +13,7 @@ export class WatchTimeService {
       throw new BadRequestException('Minutes must be greater than 0');
     }
 
-    const coinsRequired = Math.ceil((minutes / 30) * COINS_PER_10_MIN);
+    const coinsRequired = Math.ceil((minutes / 10) * COINS_PER_10_MIN);
     const secondsToAdd = minutes * 60;
 
     const wallet = await this.prisma.wallet.upsert({
