@@ -37,6 +37,13 @@ import { WatchTimeStore } from '../../rewards/data-access/watch-time.store';
               >
                 🏆 Rewards
               </a>
+              <a
+                routerLink="/news"
+                class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
+                       text-indigo-200 transition hover:bg-indigo-900 hover:text-white"
+              >
+                📰 News
+              </a>
             </div>
 
             <div class="flex items-center gap-3">
