@@ -47,7 +47,7 @@ const COINS_PER_10_MIN = 10;
           <a routerLink="/rewards/videos" class="text-sm text-gray-400 transition hover:text-white">
             ← Back to search
           </a>
-           <div class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5 ring-1 ring-indigo-400"
+           <div class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5 ring-1 ring-indigo-400 ml-auto"
               role="status"
               aria-live="polite"
               aria-atomic="true"

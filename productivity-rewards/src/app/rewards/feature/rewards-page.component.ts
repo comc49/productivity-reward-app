@@ -23,7 +23,7 @@ const PACKAGES = buildPackages('watch time');
             <h1 class="text-lg font-bold text-white">Rewards Shop</h1>
           </div>
 
-          <div class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5 ring-1 ring-indigo-400"
+          <div class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5 ring-1 ring-indigo-400 ml-auto me-3"
               role="status"
               aria-live="polite"
               aria-atomic="true"
