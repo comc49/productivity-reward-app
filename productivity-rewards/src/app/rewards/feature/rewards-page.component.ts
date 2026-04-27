@@ -2,15 +2,17 @@ import { Component, inject, computed, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { WatchTimeStore } from '../data-access/watch-time.store';
 import { buildPackages, formatMinutes } from '../../shared/time-packages';
+import { TranslocoModule } from '@jsverse/transloco';
+import { WalletStore } from '../../wallet';
 
 const PACKAGES = buildPackages('watch time');
 
 @Component({
   selector: 'app-rewards-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [TranslocoModule, RouterLink],
   template: `
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-gray-50" *transloco="let t">
       <!-- Header -->
       <header class="sticky top-0 z-10 border-b border-indigo-800 bg-indigo-700 shadow-md">
         <div class="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
@@ -19,6 +21,19 @@ const PACKAGES = buildPackages('watch time');
               ← Tasks
             </a>
             <h1 class="text-lg font-bold text-white">Rewards Shop</h1>
+          </div>
+
+          <div class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5 ring-1 ring-indigo-400"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              [attr.aria-label]="t('wallet.balance') + ': ' + walletStore.balance() + ' coins'"
+          >
+              <span aria-hidden="true" class="text-lg leading-none">🪙</span>
+              <span class="text-sm font-bold text-white">
+                {{ walletStore.balance() }}
+              </span>
+              <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
           </div>
           <a
             routerLink="/rewards/videos"
@@ -146,6 +161,7 @@ const PACKAGES = buildPackages('watch time');
 })
 export class RewardsPageComponent implements OnInit {
   protected readonly store = inject(WatchTimeStore);
+  protected readonly walletStore = inject(WalletStore);
 
   protected readonly packages = PACKAGES;
   protected readonly formatMinutes = formatMinutes;

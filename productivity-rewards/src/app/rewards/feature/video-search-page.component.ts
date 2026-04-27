@@ -2,13 +2,15 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { VideoSearchStore } from '../data-access/video-search.store';
+import { WalletStore } from '../../wallet';
+import { TranslocoModule } from "@jsverse/transloco";
 
 @Component({
   selector: 'app-video-search-page',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, TranslocoModule],
   template: `
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-gray-50" *transloco="let t">
       <!-- Header -->
       <header class="sticky top-0 z-10 border-b border-indigo-800 bg-indigo-700 shadow-md">
         <div class="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4">
@@ -16,6 +18,18 @@ import { VideoSearchStore } from '../data-access/video-search.store';
             ← Tasks
           </a>
           <h1 class="text-lg font-bold text-white">Video Rewards</h1>
+          <div class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5 ring-1 ring-indigo-400"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              [attr.aria-label]="t('wallet.balance') + ': ' + walletStore.balance() + ' coins'"
+          >
+              <span aria-hidden="true" class="text-lg leading-none">🪙</span>
+              <span class="text-sm font-bold text-white">
+                {{ walletStore.balance() }}
+              </span>
+              <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
+          </div>
         </div>
       </header>
 
@@ -132,6 +146,7 @@ import { VideoSearchStore } from '../data-access/video-search.store';
 })
 export class VideoSearchPageComponent {
   protected readonly searchStore = inject(VideoSearchStore);
+  protected readonly walletStore = inject(WalletStore);
   private router = inject(Router);
 
   protected readonly skeletons = Array(8);
