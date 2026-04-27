@@ -7,14 +7,15 @@ generator client {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  firebaseUid  String   @unique
+  id           String      @id @default(uuid())
+  firebaseUid  String      @unique
   email        String?
   displayName  String?
-  watchBalance Int      @default(0)
-  newsBalance  Int      @default(0)
-  createdAt    DateTime @default(now())
+  watchBalance Int         @default(0)
+  newsBalance  Int         @default(0)
+  createdAt    DateTime    @default(now())
   tasks        Task[]
+  dailyTasks   DailyTask[]
   wallet       Wallet?
 }
 
@@ -27,6 +28,16 @@ model Task {
   createdAt   DateTime @default(now())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+}
+
+model DailyTask {
+  id                String   @id @default(uuid())
+  title             String
+  coinReward        Int
+  lastCompletedDate String?
+  createdAt         DateTime @default(now())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
 }
 
 model Reward {
