@@ -101,7 +101,6 @@ import { Task } from '../models/task.model';
         }
 
         <!-- Delete action (completed tasks only) -->
-        @if (task().isCompleted) {
           <button
             type="button"
             class="shrink-0 rounded-lg bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-600
@@ -112,7 +111,6 @@ import { Task } from '../models/task.model';
           >
             Delete
           </button>
-        }
       </article>
     </ng-container>
   `,
