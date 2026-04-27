@@ -42,9 +42,6 @@ export class TasksService {
 
   async deleteTask(id: string, userId: string): Promise<Task> {
     const task = await this.findOne(id, userId);
-    if (!task.isCompleted) {
-      throw new BadRequestException(`Only completed tasks can be deleted`);
-    }
     return this.prisma.task.delete({ where: { id } });
   }
 
