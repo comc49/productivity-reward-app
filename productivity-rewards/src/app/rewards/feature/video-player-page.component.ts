@@ -47,27 +47,29 @@ const COINS_PER_10_MIN = 10;
           <a routerLink="/rewards/videos" class="text-sm text-gray-400 transition hover:text-white">
             ← Back to search
           </a>
-           <div class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5 ring-1 ring-indigo-400 ml-auto"
-              role="status"
-              aria-live="polite"
-              aria-atomic="true"
-              [attr.aria-label]="t('wallet.balance') + ': ' + walletStore.balance() + ' coins'"
-          >
-              <span aria-hidden="true" class="text-lg leading-none">🪙</span>
-              <span class="text-sm font-bold text-white">
-                {{ walletStore.balance() }}
-              </span>
-              <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
-          </div>
-          <div class="ml-auto flex items-center gap-3">
-            <span class="text-sm text-gray-400">Watch balance:</span>
-            <span
-              class="font-mono text-sm font-semibold"
-              [class.text-green-400]="watchTimeStore.balanceSeconds() > 0"
-              [class.text-red-400]="watchTimeStore.balanceSeconds() === 0"
+          <div class="ml-auto">
+            <div class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5 ring-1 ring-indigo-400 ml-auto"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                [attr.aria-label]="t('wallet.balance') + ': ' + walletStore.balance() + ' coins'"
             >
-              {{ formattedBalance() }}
-            </span>
+                <span aria-hidden="true" class="text-lg leading-none">🪙</span>
+                <span class="text-sm font-bold text-white">
+                  {{ walletStore.balance() }}
+                </span>
+                <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
+            </div>
+            <div class="ml-auto flex items-center gap-3">
+              <span class="text-sm text-gray-400">Watch balance:</span>
+              <span
+                class="font-mono text-sm font-semibold"
+                [class.text-green-400]="watchTimeStore.balanceSeconds() > 0"
+                [class.text-red-400]="watchTimeStore.balanceSeconds() === 0"
+              >
+                {{ formattedBalance() }}
+              </span>
+            </div>
           </div>
         </div>
       </header>
