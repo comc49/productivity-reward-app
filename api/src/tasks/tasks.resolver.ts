@@ -46,7 +46,7 @@ export class TasksResolver {
     return this.tasksService.completeTask(id, user.id);
   }
 
-  @Mutation(() => Task, { description: 'Delete a completed task' })
+  @Mutation(() => Task, { description: 'Delete a task' })
   deleteTask(
     @Args('id', { type: () => ID }) id: string,
     @CurrentUser() user: User,
