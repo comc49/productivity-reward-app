@@ -22,70 +22,53 @@ import { WatchTimeStore } from '../../rewards/data-access/watch-time.store';
       <div class="min-h-screen bg-gray-50">
         <!-- ── Site Header ───────────────────────────────────────────── -->
         <header class="sticky top-0 z-10 border-b border-indigo-800 bg-indigo-700 shadow-md" role="banner">
-          <div class="mx-auto flex max-w-2xl items-center justify-between px-4 py-4">
-            <div class="flex items-center gap-4">
-              <div>
-                <h1 class="text-xl font-bold tracking-tight text-white">
-                  {{ t('app.name') }}
-                </h1>
-                <p class="text-xs text-indigo-200">{{ t('app.tagline') }}</p>
-              </div>
-              <a
-                routerLink="/rewards"
-                class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
-                       text-indigo-200 transition hover:bg-indigo-900 hover:text-white"
-              >
-                🏆 Rewards
-              </a>
-              <a
-                routerLink="/news"
-                class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
-                       text-indigo-200 transition hover:bg-indigo-900 hover:text-white"
-              >
-                📰 News
-              </a>
-            </div>
+          <div class="mx-auto max-w-2xl px-4 py-3">
+            <!-- Row 1: title + coins + watch + user -->
+            <div class="flex items-center justify-between">
+              <h1 class="text-xl font-bold tracking-tight text-white">
+                {{ t('app.name') }}
+              </h1>
 
-            <div class="flex items-center gap-3">
-              <!-- Coin balance — live region so screen readers announce changes -->
-              <div
-                class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5
-                       ring-1 ring-indigo-400"
-                role="status"
-                aria-live="polite"
-                aria-atomic="true"
-                [attr.aria-label]="t('wallet.balance') + ': ' + walletStore.balance() + ' coins'"
-              >
-                <span aria-hidden="true" class="text-lg leading-none">🪙</span>
-                <span class="text-sm font-bold text-white">
-                  {{ walletStore.balance() }}
-                </span>
-                <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
-              </div>
+              <div class="flex items-center gap-3">
+                <!-- Coin balance — live region so screen readers announce changes -->
+                <div
+                  class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5
+                         ring-1 ring-indigo-400"
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+                  [attr.aria-label]="t('wallet.balance') + ': ' + walletStore.balance() + ' coins'"
+                >
+                  <span aria-hidden="true" class="text-lg leading-none">🪙</span>
+                  <span class="text-sm font-bold text-white">
+                    {{ walletStore.balance() }}
+                  </span>
+                  <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
+                </div>
 
-              <!-- Watch time balance -->
-              <a
-                routerLink="/rewards"
-                class="flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1.5
-                       ring-1 ring-indigo-400 transition hover:bg-indigo-500"
-                aria-label="Watch time balance"
-              >
-                <span aria-hidden="true" class="text-sm leading-none">⏱️</span>
-                <span class="text-sm font-bold text-white">{{ formattedWatchBalance() }}</span>
-              </a>
+                <!-- Watch time balance -->
+                <a
+                  routerLink="/rewards"
+                  class="flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1.5
+                         ring-1 ring-indigo-400 transition hover:bg-indigo-500"
+                  aria-label="Watch time balance"
+                >
+                  <span aria-hidden="true" class="text-sm leading-none">⏱️</span>
+                  <span class="text-sm font-bold text-white">{{ formattedWatchBalance() }}</span>
+                </a>
 
-              <!-- User avatar + sign out -->
-              @if (authService.user(); as user) {
-                <div class="flex items-center gap-2">
-                  @if (user.photoURL) {
-                    <img
-                      [src]="user.photoURL"
-                      [alt]="user.displayName ?? 'User'"
-                      class="h-8 w-8 rounded-full ring-2 ring-indigo-400"
-                    />
-                  }
-                  <button
-                    (click)="signOut()"
+                <!-- User avatar + sign out -->
+                @if (authService.user(); as user) {
+                  <div class="flex items-center gap-2">
+                    @if (user.photoURL) {
+                      <img
+                        [src]="user.photoURL"
+                        [alt]="user.displayName ?? 'User'"
+                        class="h-8 w-8 rounded-full ring-2 ring-indigo-400"
+                      />
+                    }
+                    <button
+                      (click)="signOut()"
                     class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
                            text-indigo-200 transition hover:bg-indigo-900"
                   >
@@ -94,6 +77,25 @@ import { WatchTimeStore } from '../../rewards/data-access/watch-time.store';
                 </div>
               }
             </div>
+          </div>
+
+          <!-- Row 2: nav links -->
+          <div class="mt-2 flex items-center gap-2">
+            <a
+              routerLink="/rewards"
+              class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
+                     text-indigo-200 transition hover:bg-indigo-900 hover:text-white"
+            >
+              🏆 Rewards
+            </a>
+            <a
+              routerLink="/news"
+              class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
+                     text-indigo-200 transition hover:bg-indigo-900 hover:text-white"
+            >
+              📰 News
+            </a>
+          </div>
           </div>
         </header>
 

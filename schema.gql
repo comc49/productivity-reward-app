@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input CreateDailyTaskInput {
+  coinReward: Int!
+  title: String!
+}
+
 input CreateRewardInput {
   coinCost: Int!
   description: String
@@ -14,7 +19,16 @@ input CreateTaskInput {
   title: String!
 }
 
+type DailyTask {
+  coinReward: Int!
+  id: ID!
+  lastCompletedDate: String
+  title: String!
+}
+
 type Mutation {
+  completeDailyTask(id: ID!): DailyTask!
+
   """Mark a task as completed and earn its coin reward"""
   completeTask(id: ID!): Task!
 
@@ -25,12 +39,17 @@ type Mutation {
   Consume seconds of watch time while playing a video. Returns remaining balance.
   """
   consumeWatchTime(seconds: Int!): Int!
+  createDailyTask(input: CreateDailyTaskInput!): DailyTask!
 
   """Create a new reward"""
   createReward(input: CreateRewardInput!): Reward!
 
   """Create a new task"""
   createTask(input: CreateTaskInput!): Task!
+  deleteDailyTask(id: ID!): DailyTask!
+
+  """Delete a task"""
+  deleteTask(id: ID!): Task!
 
   """Purchase news reading time with coins. Rate: 10 coins = 30 minutes."""
   purchaseNewsTime(minutes: Int!): NewsTimePurchase!
@@ -53,6 +72,7 @@ type NewsTimePurchase {
 type Query {
   """Get the coin balance for the authenticated user"""
   coinBalance: Int!
+  dailyTasks: [DailyTask!]!
 
   """Get the news reading balance in seconds for the authenticated user"""
   newsBalance: Int!

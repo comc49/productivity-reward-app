@@ -17,9 +17,8 @@ import { TranslocoHttpLoader } from './transloco-loader';
 import { authInterceptor } from './auth/auth.interceptor';
 import { environment } from '../environments/environment';
 
-const graphqlUri = (environment as { apiUrl?: string }).apiUrl
-  ? `${(environment as { apiUrl: string }).apiUrl}/graphql`
-  : '/graphql';
+const apiUrl = (environment as unknown as { apiUrl?: string }).apiUrl;
+const graphqlUri = apiUrl ? `${apiUrl}/graphql` : '/graphql';
 
 export const appConfig: ApplicationConfig = {
   providers: [
