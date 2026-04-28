@@ -20,16 +20,15 @@ export const sheriffConfig: SheriffConfig = {
     'api/src': 'scope:api',
   },
   depRules: {
-    /** tasks domain may pull from the wallet domain (for coin ops) */
-    'scope:tasks': ['scope:wallet'],
+    /** tasks domain may pull from the wallet domain and untagged root files */
+    'scope:tasks': ['scope:wallet', 'root'],
     /** wallet is foundational — it depends on nothing */
     'scope:wallet': noDependencies,
     /** api is backend only — no cross-project deps */
     'scope:api': noDependencies,
-    /**
-     * Untagged files (app root, main.ts, app.config.ts, …) may import
-     * from any module so they can wire everything together.
-     */
+    /** root-tagged files (outside defined modules) may import from anything */
+    root: anyTag,
+    /** noTag fallback for Sheriff versions that use noTag instead of root */
     noTag: anyTag,
   },
 };

@@ -3,13 +3,13 @@ import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 @ObjectType()
 export class DailyTask {
   @Field(() => ID)
-  id: string;
+  id!: string;
 
   @Field()
-  title: string;
+  title!: string;
 
   @Field(() => Int)
-  coinReward: number;
+  coinReward!: number;
 
   @Field({ nullable: true })
   lastCompletedDate?: string;

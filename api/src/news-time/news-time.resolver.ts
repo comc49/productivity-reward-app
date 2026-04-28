@@ -1,6 +1,6 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { User } from '@prisma/client';
+import type { User } from '@prisma/client';
 import { NewsTimeService } from './news-time.service';
 import { NewsTimePurchase } from './news-time-purchase.model';
 import { AuthGuard } from '../auth/auth.guard';

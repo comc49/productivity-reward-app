@@ -4,8 +4,10 @@
     "outDir": "../dist/out-tsc",
     "types": [],
     "lib": ["es2022", "dom", "dom.iterable"],
+    "declaration": true,
     "emitDeclarationOnly": false,
-    "composite": false
+    "composite": false,
+    "declarationMap": false
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"]

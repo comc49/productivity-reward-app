@@ -1,6 +1,6 @@
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { User } from '@prisma/client';
+import type { User } from '@prisma/client';
 import { DailyTask } from './daily-task.model';
 import { DailyTasksService } from './daily-tasks.service';
 import { CreateDailyTaskInput } from './dto/create-daily-task.input';

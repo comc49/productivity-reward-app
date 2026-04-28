@@ -4,8 +4,10 @@
     "outDir": "../out-tsc/spec",
     "types": ["vitest/globals"],
     "lib": ["es2022", "dom", "dom.iterable"],
+    "declaration": true,
     "emitDeclarationOnly": false,
-    "composite": false
+    "composite": false,
+    "declarationMap": false
   },
   "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
 }

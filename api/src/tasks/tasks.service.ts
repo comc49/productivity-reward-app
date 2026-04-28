@@ -41,7 +41,7 @@ export class TasksService {
   }
 
   async deleteTask(id: string, userId: string): Promise<Task> {
-    const task = await this.findOne(id, userId);
+    await this.findOne(id, userId);
     return this.prisma.task.delete({ where: { id } });
   }
 

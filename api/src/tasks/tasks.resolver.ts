@@ -1,6 +1,6 @@
 import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { User } from '@prisma/client';
+import type { User } from '@prisma/client';
 import { Task } from './task.model';
 import { TasksService } from './tasks.service';
 import { CreateTaskInput } from './dto/create-task.input';
@@ -13,7 +13,7 @@ export class TasksResolver {
   constructor(private readonly tasksService: TasksService) {}
 
   @Query(() => [Task], { description: 'List all tasks for the authenticated user' })
-  tasks(@CurrentUser() user: User): Promise<Task[]> {
+  tasks(@CurrentUser() user: User) {
     return this.tasksService.findAll(user.id);
   }
 
@@ -21,12 +21,12 @@ export class TasksResolver {
   task(
     @Args('id', { type: () => ID }) id: string,
     @CurrentUser() user: User,
-  ): Promise<Task> {
+  ) {
     return this.tasksService.findOne(id, user.id);
   }
 
   @Query(() => Int, { description: 'Get the coin balance for the authenticated user' })
-  coinBalance(@CurrentUser() user: User): Promise<number> {
+  coinBalance(@CurrentUser() user: User) {
     return this.tasksService.getBalance(user.id);
   }
 
@@ -34,7 +34,7 @@ export class TasksResolver {
   createTask(
     @Args('input') input: CreateTaskInput,
     @CurrentUser() user: User,
-  ): Promise<Task> {
+  ) {
     return this.tasksService.create(input, user.id);
   }
 
@@ -42,7 +42,7 @@ export class TasksResolver {
   completeTask(
     @Args('id', { type: () => ID }) id: string,
     @CurrentUser() user: User,
-  ): Promise<Task> {
+  ) {
     return this.tasksService.completeTask(id, user.id);
   }
 
@@ -50,7 +50,7 @@ export class TasksResolver {
   deleteTask(
     @Args('id', { type: () => ID }) id: string,
     @CurrentUser() user: User,
-  ): Promise<Task> {
+  ) {
     return this.tasksService.deleteTask(id, user.id);
   }
 }
