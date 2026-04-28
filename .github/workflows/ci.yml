@@ -27,3 +27,22 @@ jobs:
 
       - run: npx nx format:check --base=origin/main
       - run: npx nx run-many -t lint test build typecheck
+
+  migrate:
+    runs-on: ubuntu-latest
+    needs: main
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run database migration
+        run: pnpm exec prisma db push
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
