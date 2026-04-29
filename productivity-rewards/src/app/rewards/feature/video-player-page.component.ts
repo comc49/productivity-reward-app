@@ -4,6 +4,7 @@ import {
   signal,
   computed,
   OnInit,
+  AfterViewInit,
   OnDestroy,
   ElementRef,
   viewChild,
@@ -138,7 +139,7 @@ const COINS_PER_10_MIN = 10;
     </div>
   `,
 })
-export class VideoPlayerPageComponent implements OnInit, OnDestroy {
+export class VideoPlayerPageComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private platformId = inject(PLATFORM_ID);
   protected readonly watchTimeStore = inject(WatchTimeStore);
@@ -171,6 +172,9 @@ export class VideoPlayerPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.watchTimeStore.loadBalance();
+  }
+
+  ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.loadYouTubeApi();
     }
