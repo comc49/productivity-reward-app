@@ -16,13 +16,13 @@ export class YouTubeService {
   private apiKey = environment.youtubeApiKey;
 
   search(query: string, pageToken?: string): Observable<YouTubeVideo[]> {
-    const searchParams = new HttpParams()
+    let searchParams = new HttpParams()
       .set('part', 'snippet')
       .set('type', 'video')
       .set('maxResults', '24')
       .set('q', query)
-      .set('key', this.apiKey)
-      .set('pageToken', pageToken ?? '');
+      .set('key', this.apiKey);
+    if (pageToken) searchParams = searchParams.set('pageToken', pageToken);
 
     return this.http
       .get<YouTubeSearchResponse>(`${BASE}/search`, { params: searchParams })

@@ -40,8 +40,10 @@ export const VideoSearchStore = signalStore(
         const results = await firstValueFrom(youtube.search(q));
         patchState(store, { videos: results });
       } catch (err: unknown) {
+        console.error('YouTube search error:', err);
         const apiMsg = (err as { error?: { error?: { message?: string } } })?.error?.error?.message;
-        patchState(store, { error: apiMsg ?? 'Failed to search. Check your YouTube API key.' });
+        const jsMsg = err instanceof Error ? err.message : null;
+        patchState(store, { error: apiMsg ?? jsMsg ?? 'Failed to search. Check your YouTube API key.' });
       } finally {
         patchState(store, { loading: false, hasSearched: true });
       }
