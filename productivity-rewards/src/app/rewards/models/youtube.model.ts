@@ -20,7 +20,7 @@ interface YouTubeSearchItem {
     description: string;
     channelTitle: string;
     publishedAt: string;
-    thumbnails: { medium: { url: string } };
+    thumbnails: { default?: { url: string }; medium?: { url: string } };
   };
 }
 
