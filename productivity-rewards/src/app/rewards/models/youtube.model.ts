@@ -33,7 +33,8 @@ interface YouTubeVideoDetailItem {
   contentDetails: { duration: string };
 }
 
-export function parseIsoDuration(iso: string): string {
+export function parseIsoDuration(iso: string | undefined): string {
+  if (!iso) return '0:00';
   const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
   if (!match) return '0:00';
   const h = parseInt(match[1] ?? '0');
