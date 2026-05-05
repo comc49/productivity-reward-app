@@ -4,6 +4,7 @@ import {
   signal,
   computed,
   OnInit,
+  AfterViewInit,
   OnDestroy,
   ElementRef,
   viewChild,
@@ -13,6 +14,8 @@ import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { WatchTimeStore } from '../data-access/watch-time.store';
+import { WalletStore } from '../../wallet';
+import { TranslocoModule } from "@jsverse/transloco";
 
 interface YTPlayer {
   pauseVideo(): void;
@@ -36,24 +39,38 @@ const COINS_PER_10_MIN = 10;
 @Component({
   selector: 'app-video-player-page',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, TranslocoModule],
   template: `
-    <div class="min-h-screen bg-gray-900 text-white">
+    <div class="min-h-screen bg-gray-900 text-white" *transloco="let t">
       <!-- Header -->
       <header class="border-b border-gray-700 bg-gray-800">
         <div class="mx-auto flex max-w-5xl items-center gap-4 px-4 py-3">
           <a routerLink="/rewards/videos" class="text-sm text-gray-400 transition hover:text-white">
             ← Back to search
           </a>
-          <div class="ml-auto flex items-center gap-3">
-            <span class="text-sm text-gray-400">Watch balance:</span>
-            <span
-              class="font-mono text-sm font-semibold"
-              [class.text-green-400]="watchTimeStore.balanceSeconds() > 0"
-              [class.text-red-400]="watchTimeStore.balanceSeconds() === 0"
+          <div class="ml-auto flex">
+            <div class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5 ring-1 ring-indigo-400 ml-auto me-2"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                [attr.aria-label]="t('wallet.balance') + ': ' + walletStore.balance() + ' coins'"
             >
-              {{ formattedBalance() }}
-            </span>
+                <span aria-hidden="true" class="text-lg leading-none">🪙</span>
+                <span class="text-sm font-bold text-white">
+                  {{ walletStore.balance() }}
+                </span>
+                <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
+            </div>
+            <div class="ml-auto flex items-center gap-3">
+              <span class="text-sm text-gray-400">Watch balance:</span>
+              <span
+                class="font-mono text-sm font-semibold"
+                [class.text-green-400]="watchTimeStore.balanceSeconds() > 0"
+                [class.text-red-400]="watchTimeStore.balanceSeconds() === 0"
+              >
+                {{ formattedBalance() }}
+              </span>
+            </div>
           </div>
         </div>
       </header>
@@ -122,10 +139,12 @@ const COINS_PER_10_MIN = 10;
     </div>
   `,
 })
-export class VideoPlayerPageComponent implements OnInit, OnDestroy {
+export class VideoPlayerPageComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private platformId = inject(PLATFORM_ID);
   protected readonly watchTimeStore = inject(WatchTimeStore);
+  protected readonly walletStore = inject(WalletStore);
+
 
   private playerContainer = viewChild.required<ElementRef>('playerContainer');
   private player?: YTPlayer;
@@ -153,6 +172,9 @@ export class VideoPlayerPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.watchTimeStore.loadBalance();
+  }
+
+  ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.loadYouTubeApi();
     }

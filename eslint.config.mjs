@@ -26,11 +26,11 @@ export default [
       ],
     },
   },
-  // ── Sheriff: module boundary & deep-import enforcement ──────────────────
+  // ── Sheriff: module boundary enforcement ────────────────────────────────
   // Uses sheriff.config.ts at the workspace root to drive the rules.
-  // `barrelModulesOnly` enables:
-  //   @softarc/sheriff/dependency-rule  – enforces depRules from config
-  //   @softarc/sheriff/deep-import      – blocks direct imports into module internals
+  // `barrelModulesOnly` enables dependency-rule and deep-import.
+  // deep-import is disabled here because the project uses direct file paths
+  // (no barrel index.ts files) per project conventions.
   sheriff.configs.barrelModulesOnly,
   {
     files: [
@@ -43,6 +43,8 @@ export default [
       '**/*.cjs',
       '**/*.mjs',
     ],
-    rules: {},
+    rules: {
+      '@softarc/sheriff/deep-import': 'off',
+    },
   },
 ];

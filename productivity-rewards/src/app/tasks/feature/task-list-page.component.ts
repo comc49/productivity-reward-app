@@ -2,79 +2,73 @@ import { Component, inject, OnInit, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { TasksStore } from '../data-access/tasks.store';
+import { DailyTasksStore } from '../data-access/daily-tasks.store';
 import { WalletStore } from '../../wallet';
 import { TaskItemComponent } from '../ui/task-item.component';
 import { AddTaskFormComponent } from '../ui/add-task-form.component';
+import { DailyTaskItemComponent } from '../ui/daily-task-item.component';
+import { AddDailyTaskFormComponent } from '../ui/add-daily-task-form.component';
 import { CreateTaskInput } from '../models/task.model';
+import { CreateDailyTaskInput } from '../models/daily-task.model';
 import { AuthService } from '../../auth/auth.service';
 import { WatchTimeStore } from '../../rewards/data-access/watch-time.store';
 
 @Component({
   selector: 'app-task-list-page',
   standalone: true,
-  imports: [TranslocoModule, TaskItemComponent, AddTaskFormComponent, RouterLink],
+  imports: [TranslocoModule, TaskItemComponent, AddTaskFormComponent, DailyTaskItemComponent, AddDailyTaskFormComponent, RouterLink],
   template: `
     <ng-container *transloco="let t">
       <div class="min-h-screen bg-gray-50">
         <!-- ── Site Header ───────────────────────────────────────────── -->
         <header class="sticky top-0 z-10 border-b border-indigo-800 bg-indigo-700 shadow-md" role="banner">
-          <div class="mx-auto flex max-w-2xl items-center justify-between px-4 py-4">
-            <div class="flex items-center gap-4">
-              <div>
-                <h1 class="text-xl font-bold tracking-tight text-white">
-                  {{ t('app.name') }}
-                </h1>
-                <p class="text-xs text-indigo-200">{{ t('app.tagline') }}</p>
-              </div>
-              <a
-                routerLink="/rewards"
-                class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
-                       text-indigo-200 transition hover:bg-indigo-900 hover:text-white"
-              >
-                🏆 Rewards
-              </a>
-            </div>
+          <div class="mx-auto max-w-2xl px-4 py-3">
+            <!-- Row 1: title + coins + watch + user -->
+            <div class="flex items-center justify-between">
+              <h1 class="text-xl font-bold tracking-tight text-white">
+                {{ t('app.name') }}
+              </h1>
 
-            <div class="flex items-center gap-3">
-              <!-- Coin balance — live region so screen readers announce changes -->
-              <div
-                class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5
-                       ring-1 ring-indigo-400"
-                role="status"
-                aria-live="polite"
-                aria-atomic="true"
-                [attr.aria-label]="t('wallet.balance') + ': ' + walletStore.balance() + ' coins'"
-              >
-                <span aria-hidden="true" class="text-lg leading-none">🪙</span>
-                <span class="text-sm font-bold text-white">
-                  {{ walletStore.balance() }}
-                </span>
-                <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
-              </div>
+              <div class="flex items-center gap-3">
+                <!-- Coin balance — live region so screen readers announce changes -->
+                <div
+                  class="flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1.5
+                         ring-1 ring-indigo-400"
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+                  [attr.aria-label]="t('wallet.balance') + ': ' + walletStore.balance() + ' coins'"
+                >
+                  <span aria-hidden="true" class="text-lg leading-none">🪙</span>
+                  <span class="text-sm font-bold text-white">
+                    {{ walletStore.balance() }}
+                  </span>
+                  <span class="sr-only">{{ t('wallet.coins', { count: walletStore.balance() }) }}</span>
+                </div>
 
-              <!-- Watch time balance -->
-              <a
-                routerLink="/rewards"
-                class="flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1.5
-                       ring-1 ring-indigo-400 transition hover:bg-indigo-500"
-                aria-label="Watch time balance"
-              >
-                <span aria-hidden="true" class="text-sm leading-none">⏱️</span>
-                <span class="text-sm font-bold text-white">{{ formattedWatchBalance() }}</span>
-              </a>
+                <!-- Watch time balance -->
+                <a
+                  routerLink="/rewards"
+                  class="flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1.5
+                         ring-1 ring-indigo-400 transition hover:bg-indigo-500"
+                  aria-label="Watch time balance"
+                >
+                  <span aria-hidden="true" class="text-sm leading-none">⏱️</span>
+                  <span class="text-sm font-bold text-white">{{ formattedWatchBalance() }}</span>
+                </a>
 
-              <!-- User avatar + sign out -->
-              @if (authService.user(); as user) {
-                <div class="flex items-center gap-2">
-                  @if (user.photoURL) {
-                    <img
-                      [src]="user.photoURL"
-                      [alt]="user.displayName ?? 'User'"
-                      class="h-8 w-8 rounded-full ring-2 ring-indigo-400"
-                    />
-                  }
-                  <button
-                    (click)="signOut()"
+                <!-- User avatar + sign out -->
+                @if (authService.user(); as user) {
+                  <div class="flex items-center gap-2">
+                    @if (user.photoURL) {
+                      <img
+                        [src]="user.photoURL"
+                        [alt]="user.displayName ?? 'User'"
+                        class="h-8 w-8 rounded-full ring-2 ring-indigo-400"
+                      />
+                    }
+                    <button
+                      (click)="signOut()"
                     class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
                            text-indigo-200 transition hover:bg-indigo-900"
                   >
@@ -83,6 +77,25 @@ import { WatchTimeStore } from '../../rewards/data-access/watch-time.store';
                 </div>
               }
             </div>
+          </div>
+
+          <!-- Row 2: nav links -->
+          <div class="mt-2 flex items-center gap-2">
+            <a
+              routerLink="/rewards"
+              class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
+                     text-indigo-200 transition hover:bg-indigo-900 hover:text-white"
+            >
+              🏆 Rewards
+            </a>
+            <a
+              routerLink="/news"
+              class="rounded-lg bg-indigo-800 px-3 py-1.5 text-xs font-medium
+                     text-indigo-200 transition hover:bg-indigo-900 hover:text-white"
+            >
+              📰 News
+            </a>
+          </div>
           </div>
         </header>
 
@@ -101,6 +114,54 @@ import { WatchTimeStore } from '../../rewards/data-access/watch-time.store';
               (taskSubmitted)="onCreateTask($event)"
               aria-label="Add new task form"
             />
+          </section>
+
+          <!-- Daily Tasks Section -->
+          <section aria-labelledby="daily-tasks-heading">
+            <h2
+              id="daily-tasks-heading"
+              class="mb-3 text-base font-semibold text-gray-700 uppercase tracking-wide"
+            >
+              Daily Tasks
+            </h2>
+            <app-add-daily-task-form
+              class="mb-4 block"
+              (taskSubmitted)="onCreateDailyTask($event)"
+            />
+
+            @if (dailyTasksStore.isLoading()) {
+              <div
+                class="flex items-center justify-center gap-3 rounded-xl border border-gray-200
+                       bg-white py-8 text-gray-400"
+                role="status"
+              >
+                <svg class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                <span class="text-sm">Loading…</span>
+              </div>
+            } @else if (dailyTasksStore.dailyTasksWithStatus().length === 0) {
+              <div
+                class="rounded-xl border border-dashed border-gray-300 bg-white py-8
+                       text-center text-sm text-gray-400"
+                role="status"
+              >
+                No daily tasks yet. Add one above!
+              </div>
+            } @else {
+              <ul role="list" class="space-y-3">
+                @for (task of dailyTasksStore.dailyTasksWithStatus(); track task.id) {
+                  <li>
+                    <app-daily-task-item
+                      [task]="task"
+                      (complete)="onCompleteDailyTask($event)"
+                      (delete)="onDeleteDailyTask($event)"
+                    />
+                  </li>
+                }
+              </ul>
+            }
           </section>
 
           <!-- Task List Section -->
@@ -189,6 +250,7 @@ import { WatchTimeStore } from '../../rewards/data-access/watch-time.store';
 })
 export class TaskListPageComponent implements OnInit {
   protected readonly tasksStore = inject(TasksStore);
+  protected readonly dailyTasksStore = inject(DailyTasksStore);
   protected readonly walletStore = inject(WalletStore);
   protected readonly watchTimeStore = inject(WatchTimeStore);
   protected readonly authService = inject(AuthService);
@@ -205,6 +267,7 @@ export class TaskListPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.tasksStore.loadTasks();
+    this.dailyTasksStore.loadDailyTasks();
     this.watchTimeStore.loadBalance();
   }
 
@@ -218,6 +281,18 @@ export class TaskListPageComponent implements OnInit {
 
   onDeleteTask(id: string): void {
     this.tasksStore.deleteTask(id);
+  }
+
+  onCreateDailyTask(input: CreateDailyTaskInput): void {
+    this.dailyTasksStore.createTask(input);
+  }
+
+  onCompleteDailyTask(id: string): void {
+    this.dailyTasksStore.completeTask(id);
+  }
+
+  onDeleteDailyTask(id: string): void {
+    this.dailyTasksStore.deleteTask(id);
   }
 
   signOut(): void {

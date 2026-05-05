@@ -25,12 +25,12 @@ export class RewardsService {
     return this.prisma.reward.create({ data: input });
   }
 
-  async redeemReward(id: string): Promise<Reward> {
+  async redeemReward(id: string, userId: string): Promise<Reward> {
     const reward = await this.findOne(id);
     if (reward.isRedeemed) {
       throw new BadRequestException(`Reward "${reward.title}" has already been redeemed`);
     }
-    await this.tasksService.spendCoins(reward.coinCost);
+    await this.tasksService.spendCoins(reward.coinCost, userId);
     return this.prisma.reward.update({ where: { id }, data: { isRedeemed: true } });
   }
 }

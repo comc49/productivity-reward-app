@@ -1,19 +1,16 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class Reward {
+export class DailyTask {
   @Field(() => ID)
   id!: string;
 
   @Field()
   title!: string;
 
-  @Field({ nullable: true })
-  description?: string;
-
   @Field(() => Int)
-  coinCost!: number;
+  coinReward!: number;
 
-  @Field()
-  isRedeemed!: boolean;
+  @Field({ nullable: true })
+  lastCompletedDate?: string;
 }
