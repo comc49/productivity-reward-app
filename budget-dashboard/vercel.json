@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd .. && node scripts/generate-env.js && NX_DAEMON=false pnpm nx run budget-dashboard:build",
+  "outputDirectory": "../dist/budget-dashboard/browser",
+  "installCommand": "cd .. && pnpm install --no-frozen-lockfile",
+  "framework": null,
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
