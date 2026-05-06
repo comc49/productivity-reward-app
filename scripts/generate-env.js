@@ -25,6 +25,6 @@ const budgetEnv = `export const environment = {
 
 fs.writeFileSync('budget-dashboard/src/environments/environment.ts', budgetEnv);
 fs.writeFileSync('budget-dashboard/src/environments/environment.prod.ts', budgetEnv);
-fs.writeFileSync('productivity-rewards/src/environments/environment.ts', env);
-fs.writeFileSync('productivity-rewards/src/environments/environment.prod.ts', env);
+fs.writeFileSync('productivity-rewards/src/environments/environment.ts', clientEnv);
+fs.writeFileSync('productivity-rewards/src/environments/environment.prod.ts', clientEnv);
 console.log('Generated environment files for client and budget-dashboard');
