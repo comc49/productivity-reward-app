@@ -16,6 +16,15 @@ interface SubscriptionForm {
   renewsAt: string;
 }
 
+interface EditForm {
+  name: string;
+  company: string;
+  category: SubscriptionCategory;
+  cost: number | null;
+  costMode: CostMode;
+  renewsAt: string;
+}
+
 const CATEGORIES: { value: SubscriptionCategory; label: string }[] = [
   { value: 'ENTERTAINMENT', label: 'Entertainment' },
   { value: 'PRODUCTIVITY', label: 'Productivity' },
@@ -178,44 +187,157 @@ const USAGE_LABELS: Record<UsageRating, string> = {
         } @else {
           <div class="space-y-3">
             @for (sub of store.subscriptions(); track sub.id) {
-              <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4 flex items-center gap-4">
+              <div class="bg-white rounded-2xl shadow-sm border border-gray-200 px-5 py-4">
 
-                <!-- Left: Info -->
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <span class="font-semibold text-gray-900 text-sm">{{ sub.name }}</span>
-                    <span [class]="'text-xs px-2 py-0.5 rounded-full font-medium ' + categoryColor(sub.category)">
-                      {{ categoryLabel(sub.category) }}
-                    </span>
+                @if (editingId() === sub.id) {
+                  <!-- Edit Form -->
+                  <div class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Name</label>
+                        <input
+                          type="text"
+                          [ngModel]="editForm()?.name"
+                          (ngModelChange)="patchEditForm({ name: $event })"
+                          [ngModelOptions]="{ standalone: true }"
+                          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Company</label>
+                        <input
+                          type="text"
+                          [ngModel]="editForm()?.company"
+                          (ngModelChange)="patchEditForm({ company: $event })"
+                          [ngModelOptions]="{ standalone: true }"
+                          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">Category</label>
+                      <select
+                        [ngModel]="editForm()?.category"
+                        (ngModelChange)="patchEditForm({ category: $event })"
+                        [ngModelOptions]="{ standalone: true }"
+                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                      >
+                        @for (cat of categories; track cat.value) {
+                          <option [value]="cat.value">{{ cat.label }}</option>
+                        }
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">Cost</label>
+                      <div class="flex gap-2">
+                        <input
+                          type="number"
+                          [ngModel]="editForm()?.cost"
+                          (ngModelChange)="patchEditForm({ cost: $event })"
+                          [ngModelOptions]="{ standalone: true }"
+                          min="0"
+                          step="0.01"
+                          class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                        <div class="flex rounded-lg border border-gray-300 overflow-hidden text-sm">
+                          <button
+                            type="button"
+                            (click)="patchEditForm({ costMode: 'month' })"
+                            [class]="editForm()?.costMode === 'month'
+                              ? 'px-3 py-2 bg-indigo-600 text-white font-medium'
+                              : 'px-3 py-2 bg-white text-gray-600 hover:bg-gray-50'"
+                          >/ mo</button>
+                          <button
+                            type="button"
+                            (click)="patchEditForm({ costMode: 'year' })"
+                            [class]="editForm()?.costMode === 'year'
+                              ? 'px-3 py-2 bg-indigo-600 text-white font-medium'
+                              : 'px-3 py-2 bg-white text-gray-600 hover:bg-gray-50'"
+                          >/ yr</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">Renewal Date</label>
+                      <input
+                        type="date"
+                        [ngModel]="editForm()?.renewsAt"
+                        (ngModelChange)="patchEditForm({ renewsAt: $event })"
+                        [ngModelOptions]="{ standalone: true }"
+                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-1">
+                      <button
+                        type="button"
+                        (click)="cancelEdit()"
+                        class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        (click)="saveEdit(sub.id)"
+                        [disabled]="store.isLoading() || !isEditFormValid()"
+                        class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {{ store.isLoading() ? 'Saving...' : 'Save' }}
+                      </button>
+                    </div>
                   </div>
-                  <p class="text-xs text-gray-500 mt-0.5 truncate">{{ sub.company }}</p>
-                  <p class="text-xs text-gray-400 mt-1">Renews {{ formatDate(sub.renewsAt) }}</p>
-                </div>
+                } @else {
+                  <div class="flex items-center gap-4">
+                    <!-- Left: Info -->
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <span class="font-semibold text-gray-900 text-sm">{{ sub.name }}</span>
+                        <span [class]="'text-xs px-2 py-0.5 rounded-full font-medium ' + categoryColor(sub.category)">
+                          {{ categoryLabel(sub.category) }}
+                        </span>
+                      </div>
+                      <p class="text-xs text-gray-500 mt-0.5 truncate">{{ sub.company }}</p>
+                      <p class="text-xs text-gray-400 mt-1">Renews {{ formatDate(sub.renewsAt) }}</p>
+                    </div>
 
-                <!-- Middle: Cost -->
-                <div class="text-right shrink-0">
-                  <p class="text-sm font-semibold text-gray-900">\${{ monthlyCost(sub) | number:'1.2-2' }}<span class="text-xs font-normal text-gray-400">/mo</span></p>
-                  @if (sub.costPerYear) {
-                    <p class="text-xs text-gray-400">\${{ sub.costPerYear | number:'1.2-2' }}/yr</p>
-                  }
-                </div>
+                    <!-- Middle: Cost -->
+                    <div class="text-right shrink-0">
+                      <p class="text-sm font-semibold text-gray-900">\${{ monthlyCost(sub) | number:'1.2-2' }}<span class="text-xs font-normal text-gray-400">/mo</span></p>
+                      @if (sub.costPerYear) {
+                        <p class="text-xs text-gray-400">\${{ sub.costPerYear | number:'1.2-2' }}/yr</p>
+                      }
+                    </div>
 
-                <!-- Right: Usage + Delete -->
-                <div class="flex flex-col items-end gap-2 shrink-0">
-                  <button
-                    (click)="cycleUsage(sub.id, sub.usageRating)"
-                    [class]="'text-xs px-2.5 py-1 rounded-full font-medium transition-colors cursor-pointer ' + usageStyle(sub.usageRating)"
-                  >
-                    {{ usageLabel(sub.usageRating) }}
-                  </button>
-                  <button
-                    (click)="onDelete(sub.id)"
-                    class="text-xs text-gray-400 hover:text-red-500 transition-colors"
-                    aria-label="Delete subscription"
-                  >
-                    Remove
-                  </button>
-                </div>
+                    <!-- Right: Usage + Edit + Delete -->
+                    <div class="flex flex-col items-end gap-2 shrink-0">
+                      <button
+                        (click)="cycleUsage(sub.id, sub.usageRating)"
+                        [class]="'text-xs px-2.5 py-1 rounded-full font-medium transition-colors cursor-pointer ' + usageStyle(sub.usageRating)"
+                      >
+                        {{ usageLabel(sub.usageRating) }}
+                      </button>
+                      <div class="flex items-center gap-2">
+                        <button
+                          (click)="startEdit(sub)"
+                          class="text-xs text-indigo-500 hover:text-indigo-700 transition-colors"
+                          aria-label="Edit subscription"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          (click)="onDelete(sub.id)"
+                          class="text-xs text-gray-400 hover:text-red-500 transition-colors"
+                          aria-label="Delete subscription"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                }
 
               </div>
             }
@@ -251,9 +373,21 @@ export class BudgetPageComponent implements OnInit {
 
   readonly form = this._form.asReadonly();
 
+  private readonly _editingId = signal<string | null>(null);
+  readonly editingId = this._editingId.asReadonly();
+
+  private readonly _editForm = signal<EditForm | null>(null);
+  readonly editForm = this._editForm.asReadonly();
+
   readonly isFormValid = computed(() => {
     const f = this._form();
     return f.name.trim() !== '' && f.company.trim() !== '' && f.category !== '' && f.cost !== null && f.cost > 0 && f.renewsAt !== '';
+  });
+
+  readonly isEditFormValid = computed(() => {
+    const f = this._editForm();
+    if (!f) return false;
+    return f.name.trim() !== '' && f.company.trim() !== '' && f.cost !== null && f.cost > 0 && f.renewsAt !== '';
   });
 
   readonly totalMonthly = computed(() =>
@@ -280,6 +414,47 @@ export class BudgetPageComponent implements OnInit {
       renewsAt: f.renewsAt,
     });
     this._form.set({ name: '', company: '', category: '', cost: null, costMode: 'month', renewsAt: '' });
+  }
+
+  startEdit(sub: { id: string; name: string; company: string; category: SubscriptionCategory; costPerMonth: number | null; costPerYear: number | null; renewsAt: string }): void {
+    const costMode: CostMode = sub.costPerYear != null && sub.costPerMonth == null ? 'year' : 'month';
+    const cost = costMode === 'month' ? sub.costPerMonth : sub.costPerYear;
+    this._editForm.set({
+      name: sub.name,
+      company: sub.company,
+      category: sub.category,
+      cost: cost ?? null,
+      costMode,
+      renewsAt: sub.renewsAt.slice(0, 10),
+    });
+    this._editingId.set(sub.id);
+  }
+
+  patchEditForm(patch: Partial<EditForm>): void {
+    this._editForm.update(f => (f ? { ...f, ...patch } : f));
+  }
+
+  cancelEdit(): void {
+    this._editingId.set(null);
+    this._editForm.set(null);
+  }
+
+  async saveEdit(id: string): Promise<void> {
+    const f = this._editForm();
+    if (!f || !this.isEditFormValid()) return;
+    try {
+      await this.store.updateSubscription(id, {
+        name: f.name.trim(),
+        company: f.company.trim(),
+        category: f.category,
+        costPerMonth: f.costMode === 'month' ? f.cost ?? undefined : null,
+        costPerYear: f.costMode === 'year' ? f.cost ?? undefined : null,
+        renewsAt: f.renewsAt,
+      });
+      this.cancelEdit();
+    } catch {
+      // error surfaced by store
+    }
   }
 
   cycleUsage(id: string, current: UsageRating): void {

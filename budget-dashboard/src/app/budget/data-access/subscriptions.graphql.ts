@@ -76,8 +76,8 @@ export const UPDATE_SUBSCRIPTION: TypedDocumentNode<
       name?: string;
       company?: string;
       category?: SubscriptionCategory;
-      costPerMonth?: number;
-      costPerYear?: number;
+      costPerMonth?: number | null;
+      costPerYear?: number | null;
       renewsAt?: string;
       usageRating?: UsageRating;
     };

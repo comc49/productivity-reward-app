@@ -4,6 +4,7 @@ import { Apollo } from 'apollo-angular';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import {
   SubscriptionItem,
+  SubscriptionCategory,
   UsageRating,
   GET_SUBSCRIPTIONS,
   CREATE_SUBSCRIPTION,
@@ -58,6 +59,40 @@ export const SubscriptionsStore = signalStore(
         } catch {
           patchState(store, { error: 'Failed to create subscription' });
           throw new Error('Failed to create subscription');
+        } finally {
+          patchState(store, { isLoading: false });
+        }
+      },
+
+      async updateSubscription(
+        id: string,
+        changes: {
+          name?: string;
+          company?: string;
+          category?: SubscriptionCategory;
+          costPerMonth?: number | null;
+          costPerYear?: number | null;
+          renewsAt?: string;
+          usageRating?: UsageRating;
+        },
+      ): Promise<void> {
+        patchState(store, { isLoading: true, error: null });
+        try {
+          const res = await firstValueFrom(
+            apollo.mutate({
+              mutation: UPDATE_SUBSCRIPTION,
+              variables: { input: { id, ...changes } },
+            }),
+          );
+          const updated = res.data?.updateSubscription;
+          if (updated) {
+            patchState(store, {
+              subscriptions: store.subscriptions().map(s => (s.id === id ? updated : s)),
+            });
+          }
+        } catch {
+          patchState(store, { error: 'Failed to update subscription' });
+          throw new Error('Failed to update subscription');
         } finally {
           patchState(store, { isLoading: false });
         }
