@@ -11,7 +11,15 @@ const mockTask = {
   description: null,
   coinReward: 15,
   isCompleted: false,
+  order: 1,
 };
+
+const taskAt = (id: string, order: number) => ({
+  ...mockTask,
+  id,
+  title: `Task ${id}`,
+  order,
+});
 
 const makeMockApollo = (overrides?: object) => ({
   query: vi.fn().mockReturnValue(
@@ -97,7 +105,7 @@ describe('TasksStore', () => {
   describe('createTask', () => {
     it('appends the new task to the list', async () => {
       await store.loadTasks();
-      const newTask = { ...mockTask, id: 't2', title: 'New task' };
+      const newTask = { ...mockTask, id: 't2', title: 'New task', order: 2 };
       mockApollo.mutate.mockReturnValue(of({ data: { createTask: newTask } }));
       await store.createTask({ title: 'New task', coinReward: 10 });
       expect(store.tasks()).toHaveLength(2);
@@ -108,6 +116,72 @@ describe('TasksStore', () => {
       mockApollo.mutate.mockReturnValue(throwError(() => new Error('fail')));
       await store.createTask({ title: 'x', coinReward: 5 });
       expect(store.error()).toBe('Failed to create task');
+    });
+  });
+
+  describe('reorderTasks', () => {
+    const seedThree = () => {
+      mockApollo.query.mockReturnValueOnce(
+        of({
+          data: {
+            tasks: [taskAt('a', 1), taskAt('b', 2), taskAt('c', 3)],
+            coinBalance: 0,
+          },
+        }),
+      );
+      return store.loadTasks();
+    };
+
+    it('moves a task from one index to another and reassigns order values', async () => {
+      await seedThree();
+      mockApollo.mutate.mockReturnValue(of({ data: { reorderTasks: [] } }));
+
+      await store.reorderTasks(0, 2);
+
+      const ids = store.tasks().map((t) => t.id);
+      const orders = store.tasks().map((t) => t.order);
+      expect(ids).toEqual(['b', 'c', 'a']);
+      expect(orders).toEqual([1, 2, 3]);
+    });
+
+    it('sends the new id order to the reorderTasks mutation', async () => {
+      await seedThree();
+      mockApollo.mutate.mockReturnValue(of({ data: { reorderTasks: [] } }));
+
+      await store.reorderTasks(2, 0);
+
+      const call = mockApollo.mutate.mock.calls.at(-1)?.[0];
+      expect(call?.variables).toEqual({ orderedIds: ['c', 'a', 'b'] });
+    });
+
+    it('is a no-op when fromIndex equals toIndex', async () => {
+      await seedThree();
+      mockApollo.mutate.mockClear();
+
+      await store.reorderTasks(1, 1);
+
+      expect(mockApollo.mutate).not.toHaveBeenCalled();
+      expect(store.tasks().map((t) => t.id)).toEqual(['a', 'b', 'c']);
+    });
+
+    it('rolls back to the original order when the mutation fails', async () => {
+      await seedThree();
+      mockApollo.mutate.mockReturnValue(throwError(() => new Error('boom')));
+
+      await store.reorderTasks(0, 2);
+
+      expect(store.tasks().map((t) => t.id)).toEqual(['a', 'b', 'c']);
+      expect(store.error()).toBe('Failed to reorder tasks');
+    });
+
+    it('ignores out-of-range indices', async () => {
+      await seedThree();
+      mockApollo.mutate.mockClear();
+
+      await store.reorderTasks(0, 99);
+
+      expect(mockApollo.mutate).not.toHaveBeenCalled();
+      expect(store.tasks().map((t) => t.id)).toEqual(['a', 'b', 'c']);
     });
   });
 });

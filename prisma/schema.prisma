@@ -26,9 +26,12 @@ model Task {
   description String?
   coinReward  Int
   isCompleted Boolean  @default(false)
+  order       Int      @default(0)
   createdAt   DateTime @default(now())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, order])
 }
 
 model DailyTask {

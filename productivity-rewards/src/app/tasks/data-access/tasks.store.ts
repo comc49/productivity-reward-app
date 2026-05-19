@@ -15,6 +15,7 @@ import {
   CREATE_TASK,
   DELETE_TASK,
   GET_TASKS,
+  REORDER_TASKS,
 } from './tasks.graphql';
 
 type TasksState = {
@@ -98,6 +99,41 @@ export const TasksStore = signalStore(
           );
         } catch {
           patchState(store, { tasks: snapshot, error: 'Failed to delete task' });
+        }
+      },
+
+      async reorderTasks(fromIndex: number, toIndex: number): Promise<void> {
+        if (fromIndex === toIndex) return;
+
+        const snapshot = store.tasks();
+        if (
+          fromIndex < 0 ||
+          toIndex < 0 ||
+          fromIndex >= snapshot.length ||
+          toIndex >= snapshot.length
+        ) {
+          return;
+        }
+
+        const reordered = [...snapshot];
+        const [moved] = reordered.splice(fromIndex, 1);
+        reordered.splice(toIndex, 0, moved);
+        const withOrder = reordered.map((task, index) => ({
+          ...task,
+          order: index + 1,
+        }));
+
+        patchState(store, { tasks: withOrder });
+
+        try {
+          await firstValueFrom(
+            apollo.mutate({
+              mutation: REORDER_TASKS,
+              variables: { orderedIds: withOrder.map((t) => t.id) },
+            }),
+          );
+        } catch {
+          patchState(store, { tasks: snapshot, error: 'Failed to reorder tasks' });
         }
       },
 

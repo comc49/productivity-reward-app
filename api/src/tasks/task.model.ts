@@ -16,4 +16,7 @@ export class Task {
 
   @Field()
   isCompleted!: boolean;
+
+  @Field(() => Int)
+  order!: number;
 }

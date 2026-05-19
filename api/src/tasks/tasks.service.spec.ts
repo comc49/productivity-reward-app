@@ -13,6 +13,7 @@ const mockTask = {
   description: null,
   coinReward: 10,
   isCompleted: false,
+  order: 1,
   createdAt: new Date(),
   userId: USER_ID,
 };
@@ -47,11 +48,11 @@ describe('TasksService', () => {
   });
 
   describe('findAll', () => {
-    it('returns tasks scoped to the user', async () => {
+    it('returns tasks scoped to the user, ordered by order then createdAt', async () => {
       const tasks = await service.findAll(USER_ID);
       expect(prisma.task.findMany).toHaveBeenCalledWith({
         where: { userId: USER_ID },
-        orderBy: { createdAt: 'asc' },
+        orderBy: [{ order: 'asc' }, { createdAt: 'asc' }],
       });
       expect(tasks).toHaveLength(1);
     });
@@ -70,11 +71,67 @@ describe('TasksService', () => {
   });
 
   describe('create', () => {
-    it('creates a task with the userId attached', async () => {
+    it('creates a task with the userId attached and order = max + 1', async () => {
+      prisma.task.findFirst.mockResolvedValueOnce({ order: 4 });
       await service.create({ title: 'Test', coinReward: 5 }, USER_ID);
-      expect(prisma.task.create).toHaveBeenCalledWith({
-        data: { title: 'Test', coinReward: 5, userId: USER_ID },
+      expect(prisma.task.findFirst).toHaveBeenCalledWith({
+        where: { userId: USER_ID },
+        orderBy: { order: 'desc' },
+        select: { order: true },
       });
+      expect(prisma.task.create).toHaveBeenCalledWith({
+        data: { title: 'Test', coinReward: 5, userId: USER_ID, order: 5 },
+      });
+    });
+
+    it('uses order = 1 when the user has no existing tasks', async () => {
+      prisma.task.findFirst.mockResolvedValueOnce(null);
+      await service.create({ title: 'First', coinReward: 5 }, USER_ID);
+      expect(prisma.task.create).toHaveBeenCalledWith({
+        data: { title: 'First', coinReward: 5, userId: USER_ID, order: 1 },
+      });
+    });
+  });
+
+  describe('reorderTasks', () => {
+    it('updates order in a transaction matching the provided id sequence', async () => {
+      prisma.task.findMany
+        .mockResolvedValueOnce([{ id: 't-a' }, { id: 't-b' }, { id: 't-c' }])
+        .mockResolvedValueOnce([
+          { ...mockTask, id: 't-b', order: 1 },
+          { ...mockTask, id: 't-a', order: 2 },
+          { ...mockTask, id: 't-c', order: 3 },
+        ]);
+
+      await service.reorderTasks(['t-b', 't-a', 't-c'], USER_ID);
+
+      expect(prisma.task.update).toHaveBeenNthCalledWith(1, {
+        where: { id: 't-b' },
+        data: { order: 1 },
+      });
+      expect(prisma.task.update).toHaveBeenNthCalledWith(2, {
+        where: { id: 't-a' },
+        data: { order: 2 },
+      });
+      expect(prisma.task.update).toHaveBeenNthCalledWith(3, {
+        where: { id: 't-c' },
+        data: { order: 3 },
+      });
+      expect(prisma.$transaction).toHaveBeenCalled();
+    });
+
+    it('rejects ids that do not belong to the user', async () => {
+      prisma.task.findMany.mockResolvedValueOnce([{ id: 't-a' }]);
+      await expect(
+        service.reorderTasks(['t-a', 't-stranger'], USER_ID),
+      ).rejects.toThrow(BadRequestException);
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+    });
+
+    it('is a no-op when given an empty list and just returns the current tasks', async () => {
+      const tasks = await service.reorderTasks([], USER_ID);
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+      expect(tasks).toHaveLength(1);
     });
   });
 

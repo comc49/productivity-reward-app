@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { CdkDragDrop, CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 import { TranslocoModule } from '@jsverse/transloco';
 import { TasksStore } from '../data-access/tasks.store';
 import { DailyTasksStore } from '../data-access/daily-tasks.store';
@@ -16,7 +17,16 @@ import { WatchTimeStore } from '../../rewards/data-access/watch-time.store';
 @Component({
   selector: 'app-task-list-page',
   standalone: true,
-  imports: [TranslocoModule, TaskItemComponent, AddTaskFormComponent, DailyTaskItemComponent, AddDailyTaskFormComponent, RouterLink],
+  imports: [
+    TranslocoModule,
+    TaskItemComponent,
+    AddTaskFormComponent,
+    DailyTaskItemComponent,
+    AddDailyTaskFormComponent,
+    RouterLink,
+    CdkDropList,
+    CdkDrag,
+  ],
   template: `
     <ng-container *transloco="let t">
       <div class="min-h-screen bg-gray-50">
@@ -230,9 +240,11 @@ import { WatchTimeStore } from '../../rewards/data-access/watch-time.store';
                 role="list"
                 class="space-y-3"
                 aria-label="{{ t('tasks.list.heading') }}"
+                cdkDropList
+                (cdkDropListDropped)="onTaskDropped($event)"
               >
                 @for (task of tasksStore.tasks(); track task.id) {
-                  <li>
+                  <li cdkDrag class="cursor-move">
                     <app-task-item
                       [task]="task"
                       (complete)="onCompleteTask($event)"
@@ -281,6 +293,10 @@ export class TaskListPageComponent implements OnInit {
 
   onDeleteTask(id: string): void {
     this.tasksStore.deleteTask(id);
+  }
+
+  onTaskDropped(event: CdkDragDrop<unknown>): void {
+    this.tasksStore.reorderTasks(event.previousIndex, event.currentIndex);
   }
 
   onCreateDailyTask(input: CreateDailyTaskInput): void {

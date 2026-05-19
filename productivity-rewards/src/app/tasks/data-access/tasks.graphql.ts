@@ -15,6 +15,7 @@ export const GET_TASKS: TypedDocumentNode<GetTasksResult, Record<string, never>>
       description
       coinReward
       isCompleted
+      order
     }
     coinBalance
   }
@@ -61,6 +62,23 @@ export const CREATE_TASK: TypedDocumentNode<
       description
       coinReward
       isCompleted
+      order
+    }
+  }
+`;
+
+export interface ReorderTasksResult {
+  reorderTasks: Task[];
+}
+
+export const REORDER_TASKS: TypedDocumentNode<
+  ReorderTasksResult,
+  { orderedIds: string[] }
+> = gql`
+  mutation ReorderTasks($orderedIds: [ID!]!) {
+    reorderTasks(orderedIds: $orderedIds) {
+      id
+      order
     }
   }
 `;

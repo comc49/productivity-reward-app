@@ -10,7 +10,7 @@ export class TasksService {
   findAll(userId: string): Promise<Task[]> {
     return this.prisma.task.findMany({
       where: { userId },
-      orderBy: { createdAt: 'asc' },
+      orderBy: [{ order: 'asc' }, { createdAt: 'asc' }],
     });
   }
 
@@ -20,8 +20,36 @@ export class TasksService {
     return task;
   }
 
-  create(input: CreateTaskInput, userId: string): Promise<Task> {
-    return this.prisma.task.create({ data: { ...input, userId } });
+  async create(input: CreateTaskInput, userId: string): Promise<Task> {
+    const last = await this.prisma.task.findFirst({
+      where: { userId },
+      orderBy: { order: 'desc' },
+      select: { order: true },
+    });
+    const nextOrder = (last?.order ?? 0) + 1;
+    return this.prisma.task.create({ data: { ...input, userId, order: nextOrder } });
+  }
+
+  async reorderTasks(orderedIds: string[], userId: string): Promise<Task[]> {
+    if (orderedIds.length === 0) return this.findAll(userId);
+
+    const owned = await this.prisma.task.findMany({
+      where: { userId, id: { in: orderedIds } },
+      select: { id: true },
+    });
+    if (owned.length !== orderedIds.length) {
+      throw new BadRequestException('One or more tasks do not belong to this user');
+    }
+
+    await this.prisma.$transaction(
+      orderedIds.map((id, index) =>
+        this.prisma.task.update({
+          where: { id },
+          data: { order: index + 1 },
+        }),
+      ),
+    );
+    return this.findAll(userId);
   }
 
   async completeTask(id: string, userId: string): Promise<Task> {

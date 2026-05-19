@@ -53,4 +53,14 @@ export class TasksResolver {
   ) {
     return this.tasksService.deleteTask(id, user.id);
   }
+
+  @Mutation(() => [Task], {
+    description: 'Reorder tasks. Accepts ids in the new desired order.',
+  })
+  reorderTasks(
+    @Args({ name: 'orderedIds', type: () => [ID] }) orderedIds: string[],
+    @CurrentUser() user: User,
+  ) {
+    return this.tasksService.reorderTasks(orderedIds, user.id);
+  }
 }
