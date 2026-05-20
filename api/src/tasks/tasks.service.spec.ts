@@ -71,16 +71,16 @@ describe('TasksService', () => {
   });
 
   describe('create', () => {
-    it('creates a task with the userId attached and order = max + 1', async () => {
-      prisma.task.findFirst.mockResolvedValueOnce({ order: 4 });
+    it('creates a task with the userId attached and order = min - 1 so it lands on top', async () => {
+      prisma.task.findFirst.mockResolvedValueOnce({ order: 3 });
       await service.create({ title: 'Test', coinReward: 5 }, USER_ID);
       expect(prisma.task.findFirst).toHaveBeenCalledWith({
         where: { userId: USER_ID },
-        orderBy: { order: 'desc' },
+        orderBy: { order: 'asc' },
         select: { order: true },
       });
       expect(prisma.task.create).toHaveBeenCalledWith({
-        data: { title: 'Test', coinReward: 5, userId: USER_ID, order: 5 },
+        data: { title: 'Test', coinReward: 5, userId: USER_ID, order: 2 },
       });
     });
 

@@ -21,12 +21,12 @@ export class TasksService {
   }
 
   async create(input: CreateTaskInput, userId: string): Promise<Task> {
-    const last = await this.prisma.task.findFirst({
+    const first = await this.prisma.task.findFirst({
       where: { userId },
-      orderBy: { order: 'desc' },
+      orderBy: { order: 'asc' },
       select: { order: true },
     });
-    const nextOrder = (last?.order ?? 0) + 1;
+    const nextOrder = first ? first.order - 1 : 1;
     return this.prisma.task.create({ data: { ...input, userId, order: nextOrder } });
   }
 

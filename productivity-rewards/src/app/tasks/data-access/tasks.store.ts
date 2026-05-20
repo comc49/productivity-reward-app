@@ -147,7 +147,7 @@ export const TasksStore = signalStore(
           );
           if (!result.data) return;
           patchState(store, (s) => ({
-            tasks: [...s.tasks, result.data!.createTask],
+            tasks: [result.data!.createTask, ...s.tasks],
           }));
         } catch {
           patchState(store, { error: 'Failed to create task' });

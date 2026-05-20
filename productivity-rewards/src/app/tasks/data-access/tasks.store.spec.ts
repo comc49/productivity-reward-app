@@ -103,13 +103,13 @@ describe('TasksStore', () => {
   });
 
   describe('createTask', () => {
-    it('appends the new task to the list', async () => {
+    it('prepends the new task to the top of the list', async () => {
       await store.loadTasks();
-      const newTask = { ...mockTask, id: 't2', title: 'New task', order: 2 };
+      const newTask = { ...mockTask, id: 't2', title: 'New task', order: 0 };
       mockApollo.mutate.mockReturnValue(of({ data: { createTask: newTask } }));
       await store.createTask({ title: 'New task', coinReward: 10 });
       expect(store.tasks()).toHaveLength(2);
-      expect(store.tasks()[1].title).toBe('New task');
+      expect(store.tasks()[0].title).toBe('New task');
     });
 
     it('sets error on failure', async () => {
